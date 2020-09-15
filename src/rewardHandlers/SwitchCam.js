@@ -4,8 +4,8 @@ import { setVisibilityOnSource } from '../obs.js';
 export default class SwitchCam extends BaseHandler {
   #running = false;
   #scene = 'camera';
-  // #camera = 'c920';
-  #camera = 'test-color';
+  #camera = 'c920';
+  // #camera = 'test-color';
   #seconds;
 
   /**
