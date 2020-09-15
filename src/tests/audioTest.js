@@ -18,8 +18,8 @@ fs.readdirSync(soundsFolder).forEach((item) => {
       const soundPath = path.resolve(itemPath, sound);
 
       player.play(soundPath, {
-        mpg132: [
-          '-a', 'hw:0,3'
+        mpg123: [
+          '-a', 'hw:0,0013'
         ]
       });
     });
