@@ -8,4 +8,6 @@ Custom reward interactions for obs
 
 
 ### ideas
+- sub/resub things?
+- control a led strip
 - play sounds

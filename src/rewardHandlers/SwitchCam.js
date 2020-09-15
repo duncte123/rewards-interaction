@@ -6,6 +6,15 @@ export default class SwitchCam extends BaseHandler {
   #scene = 'camera';
   // #camera = 'c920';
   #camera = 'test-color';
+  #seconds;
+
+  /**
+   * @param {number} seconds - the amount of seconds before the cam switches back
+   */
+  constructor(seconds = 5) {
+    super();
+    this.#seconds = seconds;
+  }
 
   async handle(user, reward, cost, message, extra) {
     if (this.#running) {
@@ -16,7 +25,7 @@ export default class SwitchCam extends BaseHandler {
 
     setTimeout(() => {
       this.#hideCam();
-    }, 5 * 1000);
+    }, this.#seconds * 1000);
   }
 
   #showCam() {
