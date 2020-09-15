@@ -1,7 +1,9 @@
 import ComfyJS from 'comfy.js';
 import dotenv from 'dotenv';
 
-import SwitchCam from "./rewardHandlers/SwitchCam.js";
+import { obs } from './obs.js';
+
+import SwitchCam from './rewardHandlers/SwitchCam.js';
 
 dotenv.config();
 
@@ -12,6 +14,7 @@ const rewardHandlers = {
 ComfyJS.onCommand = (user, command, message, flags, extra) => {
   if(flags.broadcaster && command === "shutdown") {
     ComfyJS.Disconnect();
+    obs.disconnect();
     console.log('Disconnected');
     process.exit(0);
   }
