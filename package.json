@@ -11,12 +11,10 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "@suldashi/lame": "^1.2.5",
     "comfy.js": "^1.1.3",
     "dotenv": "^8.2.0",
     "naudiodon": "^2.2.4",
     "obs-websocket-js": "^4.0.1",
-    "play-sound": "^1.1.3",
     "uuid": "^8.3.0"
   }
 }

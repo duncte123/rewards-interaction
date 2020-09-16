@@ -1,45 +1,40 @@
-import playSound from 'play-sound';
 import path from 'path';
 import fs from 'fs';
-import portAudio from 'naudiodon';
-import lame from '@suldashi/lame';
+import { spawn } from 'child_process';
 
-// console.log(portAudio.getDevices());
-
-// const decoder = lame.Decoder();
-// this one can select the output, just not play files properly
-/*const ao = new portAudio.AudioIO({
-  outOptions: {
-    channelCount: 2,
-    sampleFormat: portAudio.SampleFormat16Bit,
-    sampleRate: 48000,
-    // sampleRate: 44100,
-    deviceId: 13,
-    // deviceId: -1, // Use -1 or omit the deviceId to select the default device
-    closeOnError: true // Close the stream if an audio error is detected, if set false then just log the error
+let running = false;
+// could wrap it in a promise
+function playTrackWithVLC(path) {
+  if (running) {
+    return;
   }
-});
 
-ao.on('error', console.error);
+  running = true;
 
-const test = path.resolve('sounds/honks/honk-sound.wav');
+  const vlcProcess = spawn('vlc', [
+    '-I dummy',
+    `file://${path}`,
+    'vlc://quit'
+  ]);
 
-console.log(test)
+  vlcProcess.stdout.on('data', data => {
+    console.log(`stdout: ${data}`);
+  });
 
-console.log('ao', ao);
+  vlcProcess.stderr.on('data', data => {
+    console.log(`stderr: ${data}`);
+  });
 
-ao.once('finish', () => { console.log("Finish called."); });
+  vlcProcess.on('error', (error) => {
+    console.log(`error: ${error.message}`);
+  });
 
-const stream = fs.createReadStream(test);
+  vlcProcess.on('close', code => {
+    console.log(`child process exited with code ${code}`);
 
-stream.pipe(ao);
-ao.start();*/
-
-// this one also works, but no audio device settings
-const player = playSound({
-  player: 'mpg123',
-});
-
+    running = false;
+  });
+}
 
 const soundsFolder = path.resolve('sounds');
 
@@ -47,18 +42,11 @@ fs.readdirSync(soundsFolder).forEach((item) => {
   const itemPath = path.resolve(soundsFolder, item);
   if (fs.lstatSync(itemPath).isDirectory()) {
     fs.readdirSync(itemPath).forEach((sound) => {
+      console.log(`Playing ${sound}`);
+
       const soundPath = path.resolve(itemPath, sound);
 
-      /*const stream = fs.createReadStream(soundPath);
-
-      stream.pipe(ao);
-      ao.start();*/
-
-      player.play(soundPath, {
-        mpg123: [
-          '-a', 'hw:0,13'
-        ]
-      });
+      playTrackWithVLC(soundPath);
     });
   }
 });
