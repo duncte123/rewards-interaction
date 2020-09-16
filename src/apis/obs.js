@@ -7,6 +7,8 @@ obs.connect({
   password: ''
 }).then(() => {
   console.log('Connected to obs');
+}).catch((e) => {
+  console.error(e);
 });
 
 obs.on('error', err => {

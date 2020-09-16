@@ -11,6 +11,10 @@ function playTrackWithVLC(path) {
 
   running = true;
 
+  if (!path.startsWith('/')) {
+    path = '/' + path
+  }
+
   const vlcProcess = spawn('vlc', [
     '-I dummy',
     `file://${path}`,
@@ -44,7 +48,9 @@ fs.readdirSync(soundsFolder).forEach((item) => {
     fs.readdirSync(itemPath).forEach((sound) => {
       console.log(`Playing ${sound}`);
 
-      const soundPath = path.resolve(itemPath, sound);
+      const soundPath = path.resolve(itemPath, sound).replace(/\\/g, '/');
+
+      console.log(soundPath)
 
       playTrackWithVLC(soundPath);
     });

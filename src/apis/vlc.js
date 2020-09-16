@@ -6,9 +6,14 @@ import { spawn } from 'child_process';
  * @return {Promise<void>}
  */
 export function playFile(path) {
+  if (!path.startsWith('/')) {
+    path = '/' + path
+  }
+
   const vlcProcess = spawn('vlc', [
     '-I dummy',
-    `file://${path}`,
+    // replace all backslashes (fucking windows) because vlc does not like them
+    `file://${path.replace(/\\/g, '/')}`,
     'vlc://quit'
   ]);
 
