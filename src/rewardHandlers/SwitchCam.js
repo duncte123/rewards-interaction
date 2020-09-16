@@ -1,5 +1,5 @@
-import BaseHandler from './BaseHandler.js';
-import { setVisibilityOnSource } from '../obs.js';
+import BaseHandler from './base/BaseHandler.js';
+import { setVisibilityOnSource } from '../apis/obs.js';
 
 export default class SwitchCam extends BaseHandler {
   #running = false;
