@@ -21,7 +21,19 @@ ComfyJS.onReward = (user, reward, cost, message, extra) => {
   const rewardHandler = rewardHandlers[extra.reward.id];
 
   if (rewardHandler) {
-    rewardHandler.handle(user, reward, cost, message, extra)
+    // wrapping it in a promise to make it async
+    new Promise((resolve, reject) => {
+      try {
+        rewardHandler.handle(user, reward, cost, message, extra);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    })
+      .then(() => {
+        // cool it worked
+      })
+      .catch(console.error);
   }
 };
 
