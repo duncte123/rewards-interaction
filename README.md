@@ -11,7 +11,7 @@ Custom reward interactions for obs
 - sub/resub things?
 - control a led strip
 - play sounds (settle for no audio device option?)
-    - `vlc -I dummy file://` (the easy way)
+    - `vlc -I dummy file:// vlc://quit` (the easy way, quit at the end for shutdown)
     - https://www.npmjs.com/package/speaker
     - https://github.com/Streampunk/naudiodon
     - https://github.com/TooTallNate/node-lame
