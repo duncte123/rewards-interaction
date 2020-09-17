@@ -16,11 +16,18 @@ obs.on('error', err => {
 });
 
 export function setVisibilityOnSource(scene, source, visible) {
-  return obs.send('SetSceneItemProperties', {
+  /*return obs.send('SetSceneItemProperties', {
     'scene-name': scene,
     item: {
       name: source,
     },
     visible: visible
+  });*/
+
+  // Let's go and experiment a bit
+  return obs.send('SetSceneItemRender', {
+    'scene-name': scene,
+    source,
+    render: visible
   });
 }

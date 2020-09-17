@@ -4,10 +4,12 @@ export default class SimpleSoundHandler extends BaseAudioHandler {
   /**
    *
    * @param {string} folderName - the name of the folder to search
+   * @param {string|string[]} sourceName - the name of the folder to search
    */
-  constructor(folderName) {
+  constructor(folderName, sourceName = null) {
     super();
 
     this._folderName = folderName;
+    this._sourceName = sourceName;
   }
 }
