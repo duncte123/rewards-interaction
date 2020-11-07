@@ -6,6 +6,7 @@ import { obs } from './apis/obs.js';
 import SwitchCam from './rewardHandlers/SwitchCam.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
 import SimpleSourceToggler from './rewardHandlers/SimpleSourceToggler.js';
+import AddGame from './rewardHandlers/AddGame.js';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const rewardHandlers = {
   '0b07f570-179f-4fbd-a3a8-a987c62b4776': new SwitchCam(5),
   '2a8a8c7f-b185-43ab-8c12-2d8e017689c4': new SimpleSoundHandler('honks', 'goose'),
   '506a5b7b-e8e3-4652-b976-574f05823f79': new SimpleSourceToggler('soundfx-images', 'dvd', 20),
+  '13449cc4-4f9e-4cf3-9086-3e9a27ccfa8b': new AddGame(),
 };
 
 ComfyJS.onReward = (user, reward, cost, message, extra) => {
