@@ -9,6 +9,8 @@ export function playFile(path) {
   if (!path.startsWith('/')) {
     path = '/' + path
   }
+  
+  console.log(`PLaying ${path}`);
 
   const vlcProcess = spawn('vlc', [
     '-I dummy',
@@ -23,7 +25,7 @@ export function playFile(path) {
 function handleVlcProcess(theProcess) {
   return new Promise((resolve) => {
     theProcess.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
+      //console.log(`stdout: ${data}`);
     });
 
     theProcess.stderr.on('data', (data) => {
