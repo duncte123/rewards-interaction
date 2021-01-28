@@ -225,10 +225,10 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-comfy.js@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/comfy.js/-/comfy.js-1.1.3.tgz#b82656937007ff090040acd94aca0bc39618a6ec"
-  integrity sha512-3iR1RlXPq4DH9Zx0wkqAUhoArit7aKbCyD1Qeo+BedJcnZWL8X2ZRL09+TN/HrEjsZivfDq/V5+NQyZukuWZRw==
+comfy.js@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/comfy.js/-/comfy.js-1.1.6.tgz#c3614dca76f81aaf039644d688951b12a632be2b"
+  integrity sha512-EkrTy0MxmicDdb6/M8j25kMgWAfEf6LszzvBl0N2BSufLZOCJuGZNdR/8jGNkhkEGXWWkFUt+La1TB36aC61Pg==
   dependencies:
     node-fetch "^2.6.0"
     tmi.js "^1.5.0"
