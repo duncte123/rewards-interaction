@@ -16,6 +16,7 @@
     "googleapis": "39",
     "naudiodon": "^2.2.4",
     "obs-websocket-js": "^4.0.1",
+    "serialport": "^9.0.6",
     "uuid": "^8.3.0"
   }
 }
