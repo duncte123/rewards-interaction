@@ -24,6 +24,7 @@
 // serial stuff
 const byte numChars = 32;
 char receivedChars[numChars];   // an array to store the received data
+String inputData;
 boolean newData = false;
 
 // IR stuff
@@ -33,9 +34,9 @@ decode_results results;
 void setup() {
   Serial.begin(115200);
   irrecv.enableIRIn(); // Start the receiver
-// this is a bit wreird
-//  while (!Serial)  // Wait for the serial connection to be establised.
-//    delay(50);
+  // this is a bit wreird
+  //  while (!Serial)  // Wait for the serial connection to be establised.
+  //    delay(50);
   Serial.println();
   Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
   Serial.println(RECV_PIN);
@@ -58,6 +59,7 @@ uint64_t lookupCommand(int color) {
     case R_MAGENTA: return MAGENTA;
     case R_PURPLE: return PURPLE;
     case R_PINK: return PINK;
+    default: return 0;
   }
 }
 
@@ -91,6 +93,7 @@ void checkSerial() {
   char rc;
 
   while (Serial.available() > 0 && newData == false) {
+    // This is faster than readString
     rc = Serial.read();
 
     if (rc != endMarker) {
@@ -99,8 +102,7 @@ void checkSerial() {
       if (ndx >= numChars) {
         ndx = numChars - 1;
       }
-    }
-    else {
+    } else {
       receivedChars[ndx] = '\0'; // terminate the string
       ndx = 0;
       newData = true;
@@ -113,12 +115,15 @@ void handleNewData() {
     Serial.print("This just in ... ");
     Serial.println(receivedChars);
 
-    String converted(receivedChars);
-    int selectedColor = converted.toInt();
+    String dataToString(receivedChars);
+    int selectedColor = dataToString.toInt();
 
     if (selectedColor > 0) {
       uint64_t command = lookupCommand(selectedColor);
-      sendIrData(command);
+
+      if (command > 0) {
+        sendIrData(command);
+      }
     }
 
     newData = false;
