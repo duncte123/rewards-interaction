@@ -2,6 +2,14 @@
 # yarn lockfile v1
 
 
+"@duncte123/comfy.js@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@duncte123/comfy.js/-/comfy.js-1.1.7.tgz#75372c44fd65b7d5a05f41145016136c915ab009"
+  integrity sha512-9AH30HsCpy4X/6TrU2ltRmDIAP67lkTNBzU358tLWU/Gsk/lmeSa0Wg8tlqMTJ0NIyt46fUGGbsSQXfBA15Pcg==
+  dependencies:
+    node-fetch "^2.6.0"
+    tmi.js "^1.5.0"
+
 "@serialport/binding-abstract@^9.0.2":
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/@serialport/binding-abstract/-/binding-abstract-9.0.2.tgz#f06f1859b59875632cd263d3f3bb0711c885c78f"

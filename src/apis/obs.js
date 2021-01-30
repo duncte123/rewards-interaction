@@ -1,19 +1,22 @@
-import OBSWebSocket  from 'obs-websocket-js';
+import OBSWebSocket from 'obs-websocket-js';
 
 export const obs = new OBSWebSocket();
 
-obs.connect({
-  address: 'localhost:4444',
-  password: ''
-}).then(() => {
-  console.log('Connected to obs');
-}).catch((e) => {
-  console.error(e);
-});
+(async () => {
+  try {
+    await obs.connect({
+      address: 'localhost:4444',
+      password: ''
+    });
+    console.log('Connected to obs');
+  } catch (e) {
+    console.error(e);
+  }
 
-obs.on('error', err => {
-  console.error('socket error:', err);
-});
+  obs.on('error', err => {
+    console.error('socket error:', err);
+  });
+})();
 
 export function setVisibilityOnSource(scene, source, visible) {
   /*return obs.send('SetSceneItemProperties', {
