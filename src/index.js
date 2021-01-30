@@ -17,7 +17,7 @@ const rewardHandlers = {
   '2a8a8c7f-b185-43ab-8c12-2d8e017689c4': new SimpleSoundHandler('honks', 'goose'),
   '506a5b7b-e8e3-4652-b976-574f05823f79': new SimpleSourceToggler('soundfx-images', 'dvd', 20),
   '13449cc4-4f9e-4cf3-9086-3e9a27ccfa8b': new AddGame(),
-  // '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
+  '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
 };
 
 ComfyJS.onReward = (user, reward, cost, message, extra) => {

@@ -3,7 +3,7 @@ import BaseHandler from './base/BaseHandler.js';
 import {sleep} from '../helpers.js';
 
 export default class ChangeLedColor extends BaseHandler {
-  // red, orange, dark, yellow, light, green, pea, cyan, light, sky_blue, blue, dark, magenta, purple, pink
+  // red, orange, dark_yellow, yellow, light_yellow, green, pea_green, cyan, light_blue, sky_blue, blue, dark_orchid, magenta, purple, pink
 
   /**
    *
@@ -14,16 +14,16 @@ export default class ChangeLedColor extends BaseHandler {
   _colors = [
     'red',
     'orange',
-    'dark',
+    'dark_yellow',
     'yellow',
-    'light',
+    'light_yellow',
     'green',
-    'pea',
+    'pea_green',
     'cyan',
-    'light',
+    'light_blue',
     'sky_blue',
     'blue',
-    'dark',
+    'dark_orchid',
     'magenta',
     'purple',
     'pink',
@@ -80,6 +80,8 @@ export default class ChangeLedColor extends BaseHandler {
       console.log('Port is null, waiting for a connection');
       await sleep(250);
     }
+
+    colorNum = colorNum + 1;
 
     console.log(`Setting color: ${colorNum}`);
     // write a newline to stop the data

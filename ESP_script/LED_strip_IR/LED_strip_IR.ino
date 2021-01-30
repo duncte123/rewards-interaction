@@ -20,6 +20,8 @@
 #include <IRrecv.h>  // Needed if you want to receive IR commands.
 #include <IRutils.h>
 #define RECV_PIN D5
+#define SEND_PIN 4
+//#define SEND_PIN D2
 
 // serial stuff
 const byte numChars = 32;
@@ -30,16 +32,21 @@ boolean newData = false;
 // IR stuff
 IRrecv irrecv(RECV_PIN);
 decode_results results;
+IRsend irsend(SEND_PIN);
 
 void setup() {
   Serial.begin(115200);
   irrecv.enableIRIn(); // Start the receiver
+  irsend.begin(); // Start the sender
   // this is a bit wreird
   //  while (!Serial)  // Wait for the serial connection to be establised.
   //    delay(50);
   Serial.println();
   Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
   Serial.println(RECV_PIN);
+  Serial.print("Sending data over Pin ");
+  Serial.println(SEND_PIN);
+  //pinMode(SEND_PIN, OUTPUT);
 }
 
 uint64_t lookupCommand(int color) {
@@ -69,15 +76,24 @@ void printHex(uint64_t hex) {
 }
 
 void loop() {
+  //Serial.println("NEC");
+
+ // irsend.sendNEC(0xF7E01F);
+
+  //delay(2000);
+  
   checkSerial();
   handleNewData();
 
-  // put your main code here, to run repeatedly:
   if (irrecv.decode(&results)) {
-    printHex(results.value);
 
-    int value = results.value; // store the value
+    uint64_t value = results.value; // store the value
     irrecv.resume(); // Receive the next value
+    printHex(value);
+    //digitalWrite(SEND_PIN, HIGH);
+    //irsend.sendNEC(value);
+    //delay(2000);
+    //digitalWrite(SEND_PIN, LOW);
 
     if (value == 0xFFFFFFFF) {
       delay(100);
@@ -133,4 +149,6 @@ void handleNewData() {
 void sendIrData(uint64_t command) {
   Serial.print("Sending command to IR blaster with value: ");
   printHex(command);
+  irsend.sendNEC(command);
+  delay(2000);
 }

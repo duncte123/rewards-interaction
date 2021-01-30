@@ -19,8 +19,7 @@
 #define DARK_ORCHID 0xF750AF
 #define MAGENTA 0xF7708F
 #define PURPLE 0xF748B7
-#define PINK 0xF7E817
-
+#define PINK 0xF76897
 
 
 // The colors that we know
