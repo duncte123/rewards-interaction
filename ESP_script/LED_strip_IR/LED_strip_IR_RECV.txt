@@ -17,7 +17,9 @@
 #include <Arduino.h>
 #include <IRremoteESP8266.h>
 #include <IRsend.h>  // Needed if you want to send IR commands.
+#include <IRrecv.h>  // Needed if you want to receive IR commands.
 #include <IRutils.h>
+#define RECV_PIN D5
 #define SEND_PIN 4
 //#define SEND_PIN D2
 
@@ -28,14 +30,23 @@ String inputData;
 boolean newData = false;
 
 // IR stuff
+IRrecv irrecv(RECV_PIN);
+decode_results results;
 IRsend irsend(SEND_PIN);
 
 void setup() {
   Serial.begin(115200);
+  irrecv.enableIRIn(); // Start the receiver
   irsend.begin(); // Start the sender
+  // this is a bit wreird
+  //  while (!Serial)  // Wait for the serial connection to be establised.
+  //    delay(50);
   Serial.println();
+  Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
+  Serial.println(RECV_PIN);
   Serial.print("Sending data over Pin ");
   Serial.println(SEND_PIN);
+  //pinMode(SEND_PIN, OUTPUT);
 }
 
 uint64_t lookupCommand(int color) {
@@ -65,8 +76,30 @@ void printHex(uint64_t hex) {
 }
 
 void loop() {
+  //Serial.println("NEC");
+
+ // irsend.sendNEC(0xF7E01F);
+
+  //delay(2000);
+  
   checkSerial();
   handleNewData();
+
+  if (irrecv.decode(&results)) {
+
+    uint64_t value = results.value; // store the value
+    irrecv.resume(); // Receive the next value
+    printHex(value);
+    //digitalWrite(SEND_PIN, HIGH);
+    //irsend.sendNEC(value);
+    //delay(2000);
+    //digitalWrite(SEND_PIN, LOW);
+
+    if (value == 0xFFFFFFFF) {
+      delay(100);
+      return;
+    }
+  }
   delay(100);
 }
 

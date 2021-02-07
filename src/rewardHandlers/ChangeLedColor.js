@@ -1,6 +1,5 @@
 import SerialPort from 'serialport';
 import BaseHandler from './base/BaseHandler.js';
-import {sleep} from '../helpers.js';
 
 export default class ChangeLedColor extends BaseHandler {
   // red, orange, dark_yellow, yellow, light_yellow, green, pea_green, cyan, light_blue, sky_blue, blue, dark_orchid, magenta, purple, pink
@@ -11,6 +10,7 @@ export default class ChangeLedColor extends BaseHandler {
    * @private
    */
   _port = null;
+  _lastColor = -1;
   _colors = [
     'red',
     'orange',
@@ -44,6 +44,8 @@ export default class ChangeLedColor extends BaseHandler {
         });
         this.setupHandlers();
 
+        console.log(`ESP connected to port ${portName}`);
+
         return;
       }
 
@@ -70,17 +72,27 @@ export default class ChangeLedColor extends BaseHandler {
       return;
     }
 
-    const randomColor = Math.floor(Math.random() * this._colors.length);
+    console.log('Selecting random color')
+    let randomColor = Math.floor(Math.random() * this._colors.length);
+
+    // "Randomly" select a different color
+    while (randomColor === this._lastColor) {
+      randomColor = Math.floor(Math.random() * this._colors.length);
+    }
+
     this.setLedColor(randomColor);
   }
 
-  async setLedColor(colorNum) {
+  setLedColor(colorNum) {
     // wait a few seconds if the port is not connected yet
-    while (this._port === null) {
-      console.log('Port is null, waiting for a connection');
-      await sleep(250);
+    if (this._port === null) {
+      console.log('Port is null, not proceeding');
+      return;
     }
 
+    this._lastColor = colorNum;
+
+    // add one to add to the index
     colorNum = colorNum + 1;
 
     console.log(`Setting color: ${colorNum}`);
