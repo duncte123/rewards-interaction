@@ -56,9 +56,7 @@ export default class LaunchpadController {
   };
 
   constructor() {
-    this.#lp = new Launchpad({
-      debug: false,
-    });
+    this.#lp = new Launchpad();
 
     this.#lp.once('ready', (name) => {
       console.log(`Connected to ${name}`);
