@@ -6,7 +6,7 @@ export default {
   redLow: 120,
   red: 72,
   amberLow: 29,
-  amber: 8,
+  amber: 9,
   yellow: 62,
   greenLow: 28,
   green: 122,

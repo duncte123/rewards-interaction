@@ -1,7 +1,6 @@
 import midi from 'midi';
 import onExit from './onExit.js';
 import {
-  isPage,
   isScene,
   isGrid,
   findDevice,
@@ -9,54 +8,129 @@ import {
 import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
 import EventEmitter from 'events';
 
-// TODO:
-//  - Have a map of handlers to have less duped code
+/**
+ * The Launchpad class, used for interacting with the Launchpad
+ *
+ * @see #eventNames
+ */
 export default class Launchpad extends EventEmitter {
 
   #input;
   #output;
 
-  constructor(portName = /^Launchpad/, options = {}) {
+  /**
+   * Creates the Launchpad object
+   *
+   * @param {{ deviceName: RegExp = null, ignore0Velocity: boolean = true, debug: boolean = false }} options
+   *  the options for the program, all fields are optional
+   */
+  constructor(options = {}) {
     super();
+
+    this.options = Object.assign({}, {
+      deviceName: /^Launchpad/,
+      ignore0Velocity: true,
+      debug: false,
+    }, options);
+
     this.#input = new midi.Input();
     this.#output = new midi.Output();
 
+    const deviceName = this.options.deviceName;
+
     const [inputPort, outputPort] = [
-      findDevice(portName, this.#input),
-      findDevice(portName, this.#output),
+      findDevice(deviceName, this.#input),
+      findDevice(deviceName, this.#output),
     ];
 
     if (inputPort === -1 || outputPort === -1) {
-      throw new Error(`could not find port # for ${portName}`);
+      throw new Error(`could not find port # for ${deviceName}`);
     }
-
-    this.options = Object.assign({}, {
-      ignore0Velocity: true,
-    }, options);
 
     onExit(() => this.closePorts());
 
     this.#input.openPort(inputPort);
     this.#output.openPort(outputPort);
 
-    this.emit('ready', this.#input.getPortName(inputPort));
+    // put the launchpad into session mode
+    this.sendSysEx(34, 0);
+
+    this.#setupMessageHandler();
+
+    process.nextTick(() => {
+      this.emit('ready', this.#input.getPortName(inputPort));
+    });
   }
 
- /* eventNames() {
+  /**
+   * Returns a list of all events that are emitted
+   *
+   * @returns {string[]} a list of all events that are emitted
+   */
+  eventNames() {
     return [
       'ready',
+      'rawMessage',
 
+      // Page (top row) events
+      'page',
+      'pageUp',
+      'pageDown',
+
+      // Scene (right row) events
+      'scene',
+      'sceneUp',
+      'sceneDown',
+
+      // Grid events
+      'grid',
+      'gridUp',
+      'gridDown',
     ];
-  }*/
+  }
 
-  onMessage(fn) {
-    this.#input.on('message', (_, message) => fn(message));
+  #setupMessageHandler() {
+    this.#input.on('message', (deltaTime, message) => {
+      setImmediate(() => {
+        this.#logDebug(`m: ${message} d: ${deltaTime}`);
+        this.#internalMessageHandler(message);
+      });
+    });
+  }
+
+  #internalMessageHandler(message) {
+    this.emit('rawMessage', message);
+
+    const [status, note, value] = message;
+    let targetEvent = 'page';
+
+    if (isGrid(status, note)) {
+      targetEvent = 'grid';
+    } else if (isScene(note)) {
+      targetEvent = 'scene';
+    }
+
+    this.#logDebug(`Emitting event for ${targetEvent}`);
+
+    const upDown = Boolean(value) ? 'Down' : 'Up';
+
+    this.emit(`${targetEvent}${upDown}`, note, value);
+
+    if (!(!value && this.options.ignore0Velocity)) {
+      this.emit(targetEvent, note, value);
+    }
   }
 
   send(...message) {
     this.#output.sendMessage(Array.isArray(message[0]) ? message[0] : message);
   }
 
+  /**
+   * Send a System Exclusive message to the launchpad.
+   * <br> The header and terminator have already been put in place by this method.
+   *
+   * @param message The 6th byte + 4 values for the SysEx message
+   */
   sendSysEx(...message) {
     const arrayParsed = Array.isArray(message[0]) ? message[0] : message;
     const sysExMessage = [
@@ -65,75 +139,19 @@ export default class Launchpad extends EventEmitter {
       247
     ];
 
+    this.#logDebug('Sending sysExMessage', sysExMessage);
+
     this.#output.sendMessage(sysExMessage);
   }
 
-  onPage(fn) {
-    this.onMessage(([status, note, value]) => {
-      if (!value && this.options.ignore0Velocity) {
-        return;
-      }
-
-      if (isPage(status)) {
-        fn(note, value);
-      }
-    });
-  }
-
+  // has to stay separate because of things
   setPage(number, color) {
     this.send(CONTROL_NOTE, number, color);
   }
 
-  onScene(fn) {
-    this.onMessage(([status, note, value]) => {
-      if (!value && this.options.ignore0Velocity) {
-        return;
-      }
-
-      if (isScene(note) && !isPage(status)) {
-        fn(note, value);
-      }
-    })
-  }
-
+  // can be merged with setGrid
   setScene(number, color) {
     this.send(NORMAL_NOTE, number, color);
-  }
-
-  onGrid(fn) {
-    this.onMessage(([status, note, value]) => {
-      if (!value && this.options.ignore0Velocity) {
-        return;
-      }
-
-      if (isGrid(status, note)) {
-        fn(note, value);
-      }
-    })
-  }
-
-  onGridDown(fn) {
-    this.onMessage(([status, note, value]) => {
-      if (!value) {
-        return;
-      }
-
-      if (isGrid(status, note)) {
-        fn(note, value);
-      }
-    });
-  }
-
-  onGridUp(fn) {
-    this.onMessage(([status, note, value]) => {
-      if (value) {
-        return;
-      }
-
-      if (isGrid(status, note)) {
-        fn(note, value);
-      }
-    });
   }
 
   setGrid(number, color) {
@@ -144,14 +162,27 @@ export default class Launchpad extends EventEmitter {
     this.sendSysEx(11, led, r, g, b);
   }
 
+  /**
+   * Closes the connection with the launchpad
+   */
   closePorts() {
+    this.#logDebug('Closing ports');
+
     this.allOff();
-    console.log('Closing ports');
     this.#input.closePort();
     this.#output.closePort();
   }
 
+  /**
+   * Turns all the lights on the launchpad off
+   */
   allOff() {
     this.sendSysEx(14, 0);
+  }
+
+  #logDebug(...message) {
+    if (this.options.debug) {
+      console.log('[Launchpad Debug]', ...message);
+    }
   }
 }

@@ -1,12 +1,18 @@
 import Launchpad from '../apis/launchpad/index.js';
 import defaultColors, { colorFromHex } from '../apis/launchpad/colors.js';
 
-const lp = new Launchpad();
+const lp = new Launchpad({
+  debug: true,
+});
 const { off, red, amber, green } = defaultColors;
 
-lp.once('ready', (deviceName) => {
-  console.log(`${deviceName} is ready`);
-});
+const offRGB = [0, 0, 0];
+const redRGB = colorFromHex('#fc0000');
+
+lp.once('ready', (name) => {
+  console.log(`Connected to ${name}`);
+  lp.setButtonRGB(25, redRGB);
+})
 
 console.log(lp.eventNames());
 
@@ -15,38 +21,35 @@ const pages = {};
 const scenes = {};
 const grid = {};
 
-const offRGB = [0, 0, 0];
-const redRGB = colorFromHex('#fc0000');
+lp.on('rawMessage', console.log);
 
-lp.onMessage(console.log.bind(console));
-
-lp.onPage(note => {
+lp.on('page', (note, value) => {
   const color = pages[note] ? off : green;
   console.log(color);
   lp.setPage(note, color);
   pages[note] = !pages[note];
 })
 
-lp.onScene(note => {
+lp.on('scene', (note, value) => {
   const color = scenes[note] ? off : amber;
   lp.setScene(note, color);
   scenes[note] = !scenes[note];
 })
 
-/*lp.onGrid(note => {
+/*lp.on('grid', (note, value) => {
   const color = grid[note] ? offRGB : redRGB;
   lp.setButtonRGB(note, color);
   grid[note] = !grid[note];
 })*/
 
-lp.onGridDown(note => {
+lp.on('gridDown', (note, value) => {
   const randHex = Math.floor(Math.random()*16777215).toString(16);
   const color = colorFromHex(randHex);
 
   lp.setButtonRGB(note, color);
 })
 
-lp.onGridUp(note => {
+lp.on('gridUp', (note, value) => {
   lp.setButtonRGB(note, offRGB);
 })
 
