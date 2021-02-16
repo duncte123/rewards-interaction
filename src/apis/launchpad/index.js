@@ -1,4 +1,5 @@
 import midi from 'midi';
+import SegfaultHandler from 'segfault-handler';
 import onExit from './onExit.js';
 import {
   isScene,
@@ -8,10 +9,16 @@ import {
 import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
 import EventEmitter from 'events';
 
+// Midi uses native code, so just in case
+SegfaultHandler.registerHandler('crash.log');
+
 /**
  * The Launchpad class, used for interacting with the Launchpad
  *
- * @see #eventNames
+ * NOTE: this class is made to work with the Launchpad MK2 (NOT MINI) and will put it in session mode
+ *
+ * @see #eventNames for a list of events that wil be emitted
+ * @todo list those events here
  */
 export default class Launchpad extends EventEmitter {
 
@@ -160,6 +167,12 @@ export default class Launchpad extends EventEmitter {
 
   setButtonRGB(led, [ r, g, b ]) {
     this.sendSysEx(11, led, r, g, b);
+  }
+
+  /// flashing and pulsing of the note (to stop: reset the color)
+
+  flash(led, color = 72) {
+    this.sendSysEx(35, 0, led, color);
   }
 
   /**

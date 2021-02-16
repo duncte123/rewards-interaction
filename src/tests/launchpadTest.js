@@ -1,17 +1,21 @@
 import Launchpad from '../apis/launchpad/index.js';
 import defaultColors, { colorFromHex } from '../apis/launchpad/colors.js';
+import LaunchpadController from '../LaunchpadController.js';
 
-const lp = new Launchpad({
+new LaunchpadController();
+
+/*const lp = new Launchpad({
   debug: true,
 });
 const { off, red, amber, green } = defaultColors;
 
 const offRGB = [0, 0, 0];
-const redRGB = colorFromHex('#fc0000');
+const redRGB = colorFromHex('#ff0000');
+const rgbColor = colorFromHex('#2f2ba4');
 
 lp.once('ready', (name) => {
   console.log(`Connected to ${name}`);
-  lp.setButtonRGB(25, redRGB);
+  lp.setButtonRGB(25, rgbColor);
 })
 
 console.log(lp.eventNames());
@@ -36,13 +40,13 @@ lp.on('scene', (note, value) => {
   scenes[note] = !scenes[note];
 })
 
-/*lp.on('grid', (note, value) => {
+/!*lp.on('grid', (note, value) => {
   const color = grid[note] ? offRGB : redRGB;
   lp.setButtonRGB(note, color);
   grid[note] = !grid[note];
-})*/
+})*!/
 
-lp.on('gridDown', (note, value) => {
+/!*lp.on('gridDown', (note, value) => {
   const randHex = Math.floor(Math.random()*16777215).toString(16);
   const color = colorFromHex(randHex);
 
@@ -51,6 +55,14 @@ lp.on('gridDown', (note, value) => {
 
 lp.on('gridUp', (note, value) => {
   lp.setButtonRGB(note, offRGB);
+})*!/
+
+lp.on('gridDown', (note, value) => {
+  lp.setButtonRGB(25, redRGB);
 })
 
-lp.allOff();
+lp.on('gridUp', (note, value) => {
+  lp.setButtonRGB(25, rgbColor);
+})
+
+lp.allOff();*/
