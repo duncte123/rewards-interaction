@@ -5,6 +5,7 @@ import {
   isScene,
   isGrid,
   findDevice,
+  isPage,
 } from './util.js';
 import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
 import EventEmitter from 'events';

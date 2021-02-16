@@ -2,6 +2,7 @@ import ComfyJS from '@duncte123/comfy.js';
 import dotenv from 'dotenv';
 
 import { obs } from './apis/obs.js';
+import LaunchpadController from './LaunchpadController.js';
 
 import SwitchCam from './rewardHandlers/SwitchCam.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
@@ -19,6 +20,9 @@ const rewardHandlers = {
   '13449cc4-4f9e-4cf3-9086-3e9a27ccfa8b': new AddGame(),
   '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
 };
+
+// connect to the launchpad
+new LaunchpadController();
 
 ComfyJS.onReward = (user, reward, cost, message, extra) => {
   console.log(user + " redeemed " + reward + " for " + cost);

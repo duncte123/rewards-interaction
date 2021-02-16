@@ -5,7 +5,7 @@ export function isPage(note) {
 }
 
 export function isScene(note) {
-  return note % 10 === 9;
+  return note < 100 && note % 10 === 9;
 }
 
 export function isGrid(status, note) {
