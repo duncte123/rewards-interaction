@@ -42,6 +42,13 @@ export default class Launchpad extends EventEmitter {
     this.emit('ready', this.#input.getPortName(inputPort));
   }
 
+ /* eventNames() {
+    return [
+      'ready',
+
+    ];
+  }*/
+
   onMessage(fn) {
     this.#input.on('message', (_, message) => fn(message));
   }

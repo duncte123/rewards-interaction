@@ -8,6 +8,8 @@ lp.once('ready', (deviceName) => {
   console.log(`${deviceName} is ready`);
 });
 
+console.log(lp.eventNames());
+
 // our application state
 const pages = {};
 const scenes = {};
