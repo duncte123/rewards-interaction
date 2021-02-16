@@ -8,6 +8,9 @@ Custom reward interactions for obs
 - [obs websocket plugin][obs-plugin]
 
 
+### Documentations
+- Launchpad: https://resource.novationmusic.com/support/product-downloads?product=Launchpad
+
 ### ideas
 - sub/resub things?
 - control a led strip
