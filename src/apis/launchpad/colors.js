@@ -1,5 +1,6 @@
 import convert from 'color-convert';
 
+// TODO: fix these colors
 export default {
   off: 0,
   redLow: 120,
@@ -16,5 +17,9 @@ function scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
 }
 
 export function colorFromHex(hex) {
-  return convert.hex.rgb(hex).map(v => scaleBetween(v, 0, 63, 0, 255));
+  // Yes I used a package here, deal with it
+  // This is for future proofing
+  return convert.hex.rgb(hex)
+    // scale the colors to fit between, 0-63
+    .map(v => scaleBetween(v, 0, 63, 0, 255));
 }

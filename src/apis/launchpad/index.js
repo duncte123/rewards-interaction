@@ -1,22 +1,29 @@
 import midi from 'midi';
 import onExit from './onExit.js';
-import colors from './colors.js';
 import {
   isPage,
   isScene,
   isGrid,
   findDevice,
 } from './util.js';
+import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
+import EventEmitter from 'events';
 
-export default class Launchpad {
+// TODO:
+//  - Have a map of handlers to have less duped code
+export default class Launchpad extends EventEmitter {
+
+  #input;
+  #output;
 
   constructor(portName = /^Launchpad/, options = {}) {
-    this.input = new midi.Input();
-    this.output = new midi.Output();
+    super();
+    this.#input = new midi.Input();
+    this.#output = new midi.Output();
 
     const [inputPort, outputPort] = [
-      findDevice(portName, this.input),
-      findDevice(portName, this.output),
+      findDevice(portName, this.#input),
+      findDevice(portName, this.#output),
     ];
 
     if (inputPort === -1 || outputPort === -1) {
@@ -25,25 +32,22 @@ export default class Launchpad {
 
     this.options = Object.assign({}, {
       ignore0Velocity: true,
-    }, options)
+    }, options);
 
+    onExit(() => this.closePorts());
 
-    this.input.openPort(inputPort);
-    this.output.openPort(outputPort);
+    this.#input.openPort(inputPort);
+    this.#output.openPort(outputPort);
 
-    this.colors = colors
-
-    onExit(() => this.closePorts())
+    this.emit('ready', this.#input.getPortName(inputPort));
   }
 
   onMessage(fn) {
-    this.input.on(`message`, (_, message) => fn(message))
-    return this
+    this.#input.on('message', (_, message) => fn(message));
   }
 
   send(...message) {
-    this.output.sendMessage(Array.isArray(message[0]) ? message[0] : message)
-    return this
+    this.#output.sendMessage(Array.isArray(message[0]) ? message[0] : message);
   }
 
   sendSysEx(...message) {
@@ -54,85 +58,79 @@ export default class Launchpad {
       247
     ];
 
-    this.output.sendMessage(sysExMessage)
-    return this
+    this.#output.sendMessage(sysExMessage);
   }
 
   onPage(fn) {
     this.onMessage(([status, note, value]) => {
       if (!value && this.options.ignore0Velocity) {
-        return this
+        return;
       }
 
       if (isPage(status)) {
-        fn(this.options.normalize ? note - 104 : note, value)
+        fn(note, value);
       }
-    })
-    return this
+    });
   }
 
   setPage(number, color) {
-    this.send(176, number, color)
+    this.send(CONTROL_NOTE, number, color);
   }
 
   onScene(fn) {
     this.onMessage(([status, note, value]) => {
       if (!value && this.options.ignore0Velocity) {
-        return
+        return;
       }
 
       if (isScene(note) && !isPage(status)) {
-        fn(note, value)
+        fn(note, value);
       }
     })
-    return this
   }
 
   setScene(number, color) {
-    this.send(144, number, color)
+    this.send(NORMAL_NOTE, number, color);
   }
 
   onGrid(fn) {
     this.onMessage(([status, note, value]) => {
       if (!value && this.options.ignore0Velocity) {
-        return
+        return;
       }
 
       if (isGrid(status, note)) {
-        fn(note, value)
+        fn(note, value);
       }
     })
-    return this
   }
 
   onGridDown(fn) {
     this.onMessage(([status, note, value]) => {
       if (!value) {
-        return
+        return;
       }
 
       if (isGrid(status, note)) {
-        fn(note, value)
+        fn(note, value);
       }
-    })
-    return this
+    });
   }
 
   onGridUp(fn) {
     this.onMessage(([status, note, value]) => {
       if (value) {
-        return
+        return;
       }
 
       if (isGrid(status, note)) {
-        fn(note, value)
+        fn(note, value);
       }
-    })
-    return this
+    });
   }
 
   setGrid(number, color) {
-    this.send(144, number, color)
+    this.send(NORMAL_NOTE, number, color);
   }
 
   setButtonRGB(led, [ r, g, b ]) {
@@ -142,14 +140,11 @@ export default class Launchpad {
   closePorts() {
     this.allOff();
     console.log('Closing ports');
-    this.input.closePort()
-    this.output.closePort()
-    return this
+    this.#input.closePort();
+    this.#output.closePort();
   }
 
   allOff() {
-    this.sendSysEx(14, 0)
+    this.sendSysEx(14, 0);
   }
 }
-
-Launchpad.colors = colors;

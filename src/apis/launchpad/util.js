@@ -1,13 +1,15 @@
-import { isControlChange } from '@lokua/midi-util';
+import { CONTROL_NOTE } from './constants.js';
 
-export const isPage = isControlChange;
+export function isPage(note) {
+  return note === CONTROL_NOTE;
+}
 
 export function isScene(note) {
-  return note % 10 === 9
+  return note % 10 === 9;
 }
 
 export function isGrid(status, note) {
-  return !(isPage(status) || isScene(note))
+  return !(isPage(status) || isScene(note));
 }
 
 export function findDevice(regex, midi) {
