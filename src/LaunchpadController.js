@@ -1,5 +1,7 @@
 import { colorFromHex, colorFromRGB } from './apis/launchpad/colors.js';
 import Launchpad from './apis/launchpad/index.js';
+// TODO: temp until obs-websocket fixes a bug
+import robot from 'robotjs';
 import * as obs from './apis/obs.js';
 
 export default class LaunchpadController {
@@ -8,6 +10,7 @@ export default class LaunchpadController {
    */
   #lp;
   #activeColor = colorFromHex('#FF0000');
+  // TODO: store mapped values of colors as this takes too long to boot
   #buttonConfig = {
     81: {
       color: colorFromRGB([ 215, 69, 223 ]),
@@ -32,7 +35,8 @@ export default class LaunchpadController {
     },
     79: {
       color: colorFromRGB([ 215, 89, 0 ]),
-      handler: () => obs.triggerTransition({ 'with-transition': { name: 'Fade', duration: 300 } }),
+      // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Fade', duration: 300 } }),
+      handler: () => robot.keyTap('f19'), //temp
     },
 
     63: {
@@ -41,7 +45,8 @@ export default class LaunchpadController {
     },
     69: {
       color: colorFromRGB([ 213, 142, 0 ]),
-      handler: () => obs.triggerTransition({ 'with-transition': { name: 'Cut' } }),
+      // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Cut' } }),
+      handler: () => robot.keyTap('f20'), //temp
     },
 
     59: {

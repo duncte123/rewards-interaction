@@ -18,6 +18,7 @@
     "googleapis": "39",
     "midi": "Cycling74/node-midi",
     "obs-websocket-js": "^4.0.1",
+    "robotjs": "^0.6.0",
     "segfault-handler": "^1.3.0",
     "serialport": "^9.0.6",
     "uuid": "^8.3.0"

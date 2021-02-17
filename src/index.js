@@ -22,6 +22,7 @@ const rewardHandlers = {
   '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
 };
 
+console.log('Connecting to launchpad');
 // connect to the launchpad
 new LaunchpadController();
 
@@ -34,7 +35,7 @@ ComfyJS.onReward = (user, reward, cost, message, extra) => {
     console.log(extra)
     console.log(`Missing handler for id ${extra.reward.id}`)
   } else {
-    // wrapping it in a promise to make it async
+    // wrapping it in a promise to make it "async"
     new Promise((resolve, reject) => {
       try {
         rewardHandler.handle(user, reward, cost, message, extra);
