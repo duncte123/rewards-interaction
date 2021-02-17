@@ -4,7 +4,7 @@ export default fn => {
 
   process.on('exit', makeExitHandler());
   process.on('SIGINT', doExit);
-  process.on('uncaughtException', e => {
+  process.on('uncaughtException', (e) => {
     // eslint-disable-next-line no-console
     console.error(e);
     doExit();

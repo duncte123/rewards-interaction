@@ -12,3 +12,4 @@ insert_final_newline = true
 ij_javascript_force_quote_style = true
 ij_javascript_use_double_quotes = false
 ij_javascript_spaces_within_imports = true
+ij_javascript_use_explicit_js_extension = true
