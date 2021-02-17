@@ -2,7 +2,7 @@ import fs from 'fs';
 import readline from 'readline';
 import googleapis from 'googleapis';
 
-const {google} = googleapis;
+const { google } = googleapis;
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];

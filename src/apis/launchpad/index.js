@@ -1,12 +1,7 @@
 import midi from 'midi';
 import SegfaultHandler from 'segfault-handler';
 import onExit from './onExit.js';
-import {
-  isScene,
-  isGrid,
-  findDevice,
-  isPage,
-} from './util.js';
+import { findDevice, isGrid, isScene } from './util.js';
 import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
 import EventEmitter from 'events';
 
@@ -166,7 +161,7 @@ export default class Launchpad extends EventEmitter {
     this.send(NORMAL_NOTE, number, color);
   }
 
-  setButtonRGB(led, [ r, g, b ]) {
+  setButtonRGB(led, [r, g, b]) {
     this.sendSysEx(11, led, r, g, b);
   }
 

@@ -9,6 +9,7 @@ import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
 import SimpleSourceToggler from './rewardHandlers/SimpleSourceToggler.js';
 import AddGame from './rewardHandlers/AddGame.js';
 import ChangeLedColor from './rewardHandlers/ChangeLedColor.js';
+import onExit from './apis/launchpad/onExit.js';
 
 dotenv.config();
 
@@ -49,13 +50,14 @@ ComfyJS.onReward = (user, reward, cost, message, extra) => {
   // TODO: things
 };*/
 
-ComfyJS.onCommand = (user, command, message, flags, extra) => {
-  if(flags.broadcaster && command === "shutdown") {
-    ComfyJS.Disconnect();
-    obs.disconnect();
-    console.log('Disconnected');
-    process.exit(0);
-  }
-};
+/*ComfyJS.onCommand = (user, command, message, flags, extra) => {
+  //
+};*/
+
+onExit(() => {
+  ComfyJS.Disconnect();
+  obs.disconnect();
+  console.log('Disconnected from obs and twitch');
+});
 
 ComfyJS.Init(process.env.TWITCHUSER, process.env.OAUTH);
