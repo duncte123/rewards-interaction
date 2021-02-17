@@ -1,62 +1,67 @@
-import { colorFromHex, colorFromRGB } from './apis/launchpad/colors.js';
 import Launchpad from './apis/launchpad/index.js';
 // TODO: temp until obs-websocket fixes a bug
 import robot from 'robotjs';
 import * as obs from './apis/obs.js';
+import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
 
 export default class LaunchpadController {
   /**
    * {Launchpad}
    */
   #lp;
-  #activeColor = colorFromHex('#FF0000');
+  #activeColor = '#FF0000';
   // TODO: store mapped values of colors as this takes too long to boot
   #buttonConfig = {
     81: {
-      color: colorFromRGB([ 215, 69, 223 ]),
+      color: '#d745df',
       handler: () => obs.selectScene('main stream'),
     },
     82: {
-      color: colorFromRGB([ 71, 202, 183 ]),
+      color: '#47cab7',
       handler: () => obs.selectScene('big cam'),
     },
     83: {
-      color: colorFromRGB([ 146, 238, 146 ]),
+      color: '#92ee92',
       handler: () => obs.selectScene('starting soon'),
     },
 
     77: {
-      color: colorFromRGB([ 197, 42, 169 ]),
+      color: '#c52aa9',
       handler: LaunchpadController.toggleC920,
     },
     73: {
-      color: colorFromRGB([ 153, 41, 213 ]),
+      color:  '#9929d5',
       handler: () => obs.selectScene('be right back'),
     },
     79: {
-      color: colorFromRGB([ 215, 89, 0 ]),
+      color: '#d75900',
       // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Fade', duration: 300 } }),
       handler: () => robot.keyTap('f19'), //temp
     },
 
     63: {
-      color: colorFromRGB([ 136, 20, 42 ]),
+      color: '#88142a',
       handler: () => obs.selectScene('end of stream'),
     },
     69: {
-      color: colorFromRGB([ 213, 142, 0 ]),
+      color: '#d58e00',
       // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Cut' } }),
       handler: () => robot.keyTap('f20'), //temp
     },
 
     59: {
-      color: colorFromRGB([ 255, 0, 0 ]),
+      color: '#ff0000',
       handler: () => obs.toggleStudioMode(),
     },
 
     19: {
-      color: colorFromRGB([ 22, 200, 105 ]),
+      color: '#16c869',
       handler: () => obs.triggerTransition(),
+    },
+
+    11: {
+      color: '#d49308',
+      handler: LaunchpadController.triggerHonk,
     },
   };
 
@@ -76,7 +81,7 @@ export default class LaunchpadController {
     for (const button of Object.keys(this.#buttonConfig)) {
       const color = this.#buttonConfig[button].color;
 
-      this.#lp.setButtonRGB(button, color);
+      this.#lp.setButtonHex(button, color);
     }
 
     this.#lp.on('gridDown', (note) => {
@@ -99,11 +104,11 @@ export default class LaunchpadController {
     try {
       // the websocket is fast enough to have this not be needed anymore
       // set the color to active
-      this.#lp.setButtonRGB(note, this.#activeColor);
+      this.#lp.setButtonHex(note, this.#activeColor);
       // handle the function
       await this.#buttonConfig[note].handler();
       // reset the color
-      this.#lp.setButtonRGB(note, this.#buttonConfig[note].color);
+      this.#lp.setButtonHex(note, this.#buttonConfig[note].color);
     } catch (e) {
       console.log(e);
     }
@@ -113,5 +118,12 @@ export default class LaunchpadController {
     const { visible } = await obs.getSourceProperties('camera', 'c920');
 
     return obs.setVisibilityOnSource('camera', 'c920', !visible);
+  }
+
+  static async triggerHonk() {
+    // I would say not storing this object is bad practice
+    const handler = new SimpleSoundHandler('honks', 'goose');
+
+    await handler.handle()
   }
 }

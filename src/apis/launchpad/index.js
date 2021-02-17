@@ -4,6 +4,7 @@ import onExit from './onExit.js';
 import { findDevice, isGrid, isScene } from './util.js';
 import { CONTROL_NOTE, NORMAL_NOTE } from './constants.js';
 import EventEmitter from 'events';
+import { colorFromHex, colorFromRGB } from './colors.js';
 
 // Midi uses native code, so just in case
 SegfaultHandler.registerHandler('crash.log');
@@ -161,8 +162,12 @@ export default class Launchpad extends EventEmitter {
     this.send(NORMAL_NOTE, number, color);
   }
 
-  setButtonRGB(led, [r, g, b]) {
-    this.sendSysEx(11, led, r, g, b);
+  setButtonHex(led, hex) {
+    this.sendSysEx(11, led, ...colorFromHex(hex));
+  }
+
+  setButtonRGB(led, rgb) {
+    this.sendSysEx(11, led, ...colorFromRGB(rgb));
   }
 
   /// flashing and pulsing of the note (to stop: reset the color)
