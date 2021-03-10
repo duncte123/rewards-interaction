@@ -13,4 +13,13 @@ export default class BaseHandler {
   handle(user, reward, cost, message, extra) {
     throw new Error('Abstract');
   }
+
+  /**
+   * Logs a message to the console
+   *
+   * @param {any} message
+   */
+  log(...message) {
+    console.log(`[${this.constructor.name}]`, message)
+  }
 }

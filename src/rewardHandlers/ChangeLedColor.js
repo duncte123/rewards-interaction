@@ -33,6 +33,11 @@ export default class ChangeLedColor extends BaseHandler {
     super();
 
     SerialPort.list().then((ports) =>  {
+      if (ports.length === 0) {
+        this.log('No ports to connect to, disabling feature');
+        return;
+      }
+
       if (ports.length === 1) {
         const portName = ports[0].path
 
@@ -44,24 +49,24 @@ export default class ChangeLedColor extends BaseHandler {
         });
         this.setupHandlers();
 
-        console.log(`ESP connected to port ${portName}`);
+        this.log(`ESP connected to port ${portName}`);
 
         return;
       }
 
-      console.log(`Too many ports found: ${ports.map((port) => port.path)}`);
+      this.log(`Too many ports found: ${ports.map((port) => port.path)}`);
     });
   }
 
   setupHandlers() {
     this._port.on('error', (err) => {
-      console.log('ESP Error: ', err.message);
+      this.log('ESP Error: ', err.message);
     });
 
     // Switches the port into "flowing mode"
     this._port.on('data', (data) => {
       const decoded = data.toString('utf8');
-      console.log('ESP Data: ' + decoded);
+      this.log('ESP Data: ' + decoded);
     });
   }
 
@@ -72,7 +77,7 @@ export default class ChangeLedColor extends BaseHandler {
       return;
     }
 
-    console.log('Selecting random color')
+    this.log('Selecting random color')
     let randomColor = Math.floor(Math.random() * this._colors.length);
 
     // "Randomly" select a different color
@@ -86,7 +91,7 @@ export default class ChangeLedColor extends BaseHandler {
   setLedColor(colorNum) {
     // wait a few seconds if the port is not connected yet
     if (this._port === null) {
-      console.log('Port is null, not proceeding');
+      this.log('Port is null, not proceeding');
       return;
     }
 
@@ -95,7 +100,7 @@ export default class ChangeLedColor extends BaseHandler {
     // add one to add to the index
     colorNum = colorNum + 1;
 
-    console.log(`Setting color: ${colorNum}`);
+    this.log(`Setting color: ${colorNum}`);
     // write a newline to stop the data
     this._port.write(`${colorNum}\n`);
   }
