@@ -20,6 +20,6 @@ export default class BaseHandler {
    * @param {any} message
    */
   log(...message) {
-    console.log(`[${this.constructor.name}]`, message)
+    console.log(`[${this.constructor.name}]`, ...message)
   }
 }
