@@ -1,6 +1,5 @@
 import ComfyJS from '@duncte123/comfy.js';
 import dotenv from 'dotenv';
-import Twitch from './apis/twitch.js';
 
 import { obs } from './apis/obs.js';
 import LaunchpadController from './LaunchpadController.js';
