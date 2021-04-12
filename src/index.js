@@ -1,5 +1,6 @@
 import ComfyJS from '@duncte123/comfy.js';
 import dotenv from 'dotenv';
+import Twitch from './apis/twitch.js';
 
 import { obs } from './apis/obs.js';
 import LaunchpadController from './LaunchpadController.js';
@@ -10,6 +11,7 @@ import SimpleSourceToggler from './rewardHandlers/SimpleSourceToggler.js';
 import AddGame from './rewardHandlers/AddGame.js';
 import ChangeLedColor from './rewardHandlers/ChangeLedColor.js';
 import onExit from './apis/launchpad/onExit.js';
+import PlayAds from './rewardHandlers/PlayAds.js';
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ const rewardHandlers = {
   '506a5b7b-e8e3-4652-b976-574f05823f79': new SimpleSourceToggler('soundfx-images', 'dvd', 20),
   '13449cc4-4f9e-4cf3-9086-3e9a27ccfa8b': new AddGame(),
   '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
+  '5127c0b4-7bc1-462e-87fa-ed0784c1bbf9': new PlayAds(),
 };
 
 console.log('Connecting to launchpad');
