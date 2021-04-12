@@ -55,6 +55,7 @@ uint64_t lookupCommand(int color) {
     case R_MAGENTA: return MAGENTA;
     case R_PURPLE: return PURPLE;
     case R_PINK: return PINK;
+    case R_WHITE: return WHITE;
     default: return 0;
   }
 }

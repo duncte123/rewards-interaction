@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import dotenv from 'dotenv';
 
 class Twitch {
@@ -23,8 +23,8 @@ class Twitch {
     });
 
     this.http.get('/users', {
-      params: { 'login': env.TWITCHUSER }
-    }).then(({ data: { data } }) => {
+      params: {'login': env.TWITCHUSER}
+    }).then(({data: {data}}) => {
       if (!data.length) {
         throw new Error('No data for twitch user, twitch api will not work properly');
       }
@@ -34,6 +34,8 @@ class Twitch {
     });
   }
 
+  public test(): void {}
+
   public async playAds(length = 30): Promise<void> {
     if (!this.broadcasterId) {
       console.log('MISSING BROADCASTER ID, ADS WILL NOT WORK');
@@ -41,7 +43,7 @@ class Twitch {
     }
 
     try {
-      const { data } = await this.http.post('/channels/commercial', {
+      const {data} = await this.http.post('/channels/commercial', {
         'broadcaster_id': this.broadcasterId,
         length,
       });
@@ -61,6 +63,6 @@ class Twitch {
   }
 }
 
-const ins = Twitch.getInstance();
+const ins = new Twitch();
 
 export default ins;

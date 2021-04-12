@@ -45,3 +45,4 @@
 #define R_MAGENTA 13
 #define R_PURPLE 14
 #define R_PINK 15
+#define R_WHITE 16

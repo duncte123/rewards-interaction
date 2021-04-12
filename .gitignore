@@ -3,4 +3,4 @@ node_modules/
 .env
 google-credentials.json
 goolge-token.json
-build/
+dist/

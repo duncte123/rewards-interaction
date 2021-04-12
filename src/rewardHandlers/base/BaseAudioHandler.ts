@@ -1,9 +1,9 @@
-import BaseHandler from './BaseHandler';
+import BaseHandler from './BaseHandler.js';
 import path from 'path';
 import { playFile } from '../../apis/vlc.js';
 import { setVisibilityOnSource } from '../../apis/obs.js';
 import fs from 'fs';
-import {OnRewardExtra} from "@duncte123/comfy.js";
+import { OnRewardExtra } from '@duncte123/comfy.js';
 
 /**
  * @abstract
@@ -30,7 +30,7 @@ export default abstract class BaseAudioHandler extends BaseHandler {
    * @type {string|string[]|null}
    * @protected
    */
-  _sourceName: string|string[]|null = null;
+  _sourceName: string | string[] | null = null;
 
 
   handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra) {
@@ -84,7 +84,11 @@ export default abstract class BaseAudioHandler extends BaseHandler {
    *
    * @returns {string}
    */
-  private getSource() {
+  private getSource(): string {
+    if (this._sourceName == null) {
+      return '';
+    }
+
     if (Array.isArray(this._sourceName)) {
       return this._sourceName[Math.floor(Math.random() * this._sourceName.length)]
     }

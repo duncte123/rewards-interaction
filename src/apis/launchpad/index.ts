@@ -9,6 +9,12 @@ import { colorFromHex, colorFromRGB } from './colors.js';
 // Midi uses native code, so just in case
 SegfaultHandler.registerHandler('crash.log');
 
+type LaunchpadOptions = {
+  deviceName: RegExp,
+  ignore0Velocity: boolean,
+  debug: boolean
+};
+
 /**
  * The Launchpad class, used for interacting with the Launchpad
  *
@@ -19,8 +25,9 @@ SegfaultHandler.registerHandler('crash.log');
  */
 export default class Launchpad extends EventEmitter {
 
-  #input;
-  #output;
+  private readonly input: midi.Input;
+  private readonly output: midi.Output;
+  private readonly options: LaunchpadOptions;
 
   /**
    * Creates the Launchpad object
@@ -28,7 +35,7 @@ export default class Launchpad extends EventEmitter {
    * @param {{ deviceName: RegExp = null, ignore0Velocity: boolean = true, debug: boolean = false }} options
    *  the options for the program, all fields are optional
    */
-  constructor(options = {}) {
+  constructor(options: LaunchpadOptions | {} = {}) {
     super();
 
     this.options = Object.assign({}, {
@@ -37,14 +44,14 @@ export default class Launchpad extends EventEmitter {
       debug: false,
     }, options);
 
-    this.#input = new midi.Input();
-    this.#output = new midi.Output();
+    this.input = new midi.Input();
+    this.output = new midi.Output();
 
     const deviceName = this.options.deviceName;
 
     const [inputPort, outputPort] = [
-      findDevice(deviceName, this.#input),
-      findDevice(deviceName, this.#output),
+      findDevice(deviceName, this.input),
+      findDevice(deviceName, this.output),
     ];
 
     if (inputPort === -1 || outputPort === -1) {
@@ -53,16 +60,16 @@ export default class Launchpad extends EventEmitter {
 
     onExit(() => this.closePorts());
 
-    this.#input.openPort(inputPort);
-    this.#output.openPort(outputPort);
+    this.input.openPort(inputPort);
+    this.output.openPort(outputPort);
 
     // put the launchpad into session mode
     this.sendSysEx(34, 0);
 
-    this.#setupMessageHandler();
+    this.setupMessageHandler();
 
     process.nextTick(() => {
-      this.emit('ready', this.#input.getPortName(inputPort));
+      this.emit('ready', this.input.getPortName(inputPort));
     });
   }
 
@@ -71,7 +78,7 @@ export default class Launchpad extends EventEmitter {
    *
    * @returns {string[]} a list of all events that are emitted
    */
-  eventNames() {
+  public eventNames(): string[] {
     return [
       'ready',
       'rawMessage',
@@ -93,20 +100,20 @@ export default class Launchpad extends EventEmitter {
     ];
   }
 
-  #setupMessageHandler() {
-    this.#input.on('message', (deltaTime, message) => {
+  private setupMessageHandler() {
+    this.input.on('message', (deltaTime: number, message: number[]) => {
       setImmediate(() => {
-        this.#logDebug(`m: ${message} d: ${deltaTime}`);
-        this.#internalMessageHandler(message);
+        this.logDebug(`m: ${message} d: ${deltaTime}`);
+        this.internalMessageHandler(message);
       });
     });
   }
 
-  #internalMessageHandler(message) {
+  private internalMessageHandler(message: number[]) {
     this.emit('rawMessage', message);
 
     const [status, note, value] = message;
-    let targetEvent = 'page';
+    let targetEvent: string = 'page';
 
     if (isGrid(status, note)) {
       targetEvent = 'grid';
@@ -114,9 +121,9 @@ export default class Launchpad extends EventEmitter {
       targetEvent = 'scene';
     }
 
-    this.#logDebug(`Emitting event for ${targetEvent}`);
+    this.logDebug(`Emitting event for ${targetEvent}`);
 
-    const upDown = Boolean(value) ? 'Down' : 'Up';
+    const upDown: string = Boolean(value) ? 'Down' : 'Up';
 
     this.emit(`${targetEvent}${upDown}`, note, value);
 
@@ -125,8 +132,8 @@ export default class Launchpad extends EventEmitter {
     }
   }
 
-  send(...message) {
-    this.#output.sendMessage(Array.isArray(message[0]) ? message[0] : message);
+  public send(...message: number[]) {
+    this.output.sendMessage(Array.isArray(message[0]) ? message[0] : message);
   }
 
   /**
@@ -135,7 +142,7 @@ export default class Launchpad extends EventEmitter {
    *
    * @param message The 6th byte + 4 values for the SysEx message
    */
-  sendSysEx(...message) {
+  public sendSysEx(...message: number[]) {
     const arrayParsed = Array.isArray(message[0]) ? message[0] : message;
     const sysExMessage = [
       240, 0, 32, 41, 2, 24,
@@ -143,58 +150,58 @@ export default class Launchpad extends EventEmitter {
       247
     ];
 
-    this.#logDebug('Sending sysExMessage', sysExMessage);
+    this.logDebug('Sending sysExMessage', sysExMessage);
 
-    this.#output.sendMessage(sysExMessage);
+    this.output.sendMessage(sysExMessage);
   }
 
   // has to stay separate because of things
-  setPage(number, color) {
+  public setPage(number: number, color: number) {
     this.send(CONTROL_NOTE, number, color);
   }
 
   // can be merged with setGrid
-  setScene(number, color) {
+  public setScene(number: number, color: number) {
     this.send(NORMAL_NOTE, number, color);
   }
 
-  setGrid(number, color) {
+  public setGrid(number: number, color: number) {
     this.send(NORMAL_NOTE, number, color);
   }
 
-  setButtonHex(led, hex) {
+  public setButtonHex(led: number, hex: string) {
     this.sendSysEx(11, led, ...colorFromHex(hex));
   }
 
-  setButtonRGB(led, rgb) {
+  public setButtonRGB(led: number, rgb: number[]) {
     this.sendSysEx(11, led, ...colorFromRGB(rgb));
   }
 
   /// flashing and pulsing of the note (to stop: reset the color)
 
-  flash(led, color = 72) {
+  public flash(led: number, color = 72) {
     this.sendSysEx(35, 0, led, color);
   }
 
   /**
    * Closes the connection with the launchpad
    */
-  closePorts() {
-    this.#logDebug('Closing ports');
+  public closePorts() {
+    this.logDebug('Closing ports');
 
     this.allOff();
-    this.#input.closePort();
-    this.#output.closePort();
+    this.input.closePort();
+    this.output.closePort();
   }
 
   /**
    * Turns all the lights on the launchpad off
    */
-  allOff() {
+  public allOff() {
     this.sendSysEx(14, 0);
   }
 
-  #logDebug(...message) {
+  private logDebug(...message: any[]) {
     if (this.options.debug) {
       console.log('[Launchpad Debug]', ...message);
     }

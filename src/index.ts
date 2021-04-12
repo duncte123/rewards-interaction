@@ -4,14 +4,14 @@ import dotenv from 'dotenv';
 import { obs } from './apis/obs.js';
 import LaunchpadController from './LaunchpadController.js';
 
-import SwitchCam from './rewardHandlers/SwitchCam';
-import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler';
-import SimpleSourceToggler from './rewardHandlers/SimpleSourceToggler';
-import AddGame from './rewardHandlers/AddGame';
-import ChangeLedColor from './rewardHandlers/ChangeLedColor';
-import onExit from './apis/launchpad/onExit';
-import PlayAds from './rewardHandlers/PlayAds';
-import BaseHandler from "./rewardHandlers/base/BaseHandler";
+import SwitchCam from './rewardHandlers/SwitchCam.js';
+import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
+import SimpleSourceToggler from './rewardHandlers/SimpleSourceToggler.js';
+import AddGame from './rewardHandlers/AddGame.js';
+import ChangeLedColor from './rewardHandlers/ChangeLedColor.js';
+import onExit from './apis/launchpad/onExit.js';
+import PlayAds from './rewardHandlers/PlayAds.js';
+import BaseHandler from './rewardHandlers/base/BaseHandler.js';
 
 dotenv.config();
 
