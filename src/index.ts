@@ -68,4 +68,5 @@ onExit(() => {
   console.log('Disconnected from obs and twitch');
 });
 
-ComfyJS.Init(process.env.TWITCHUSER!, process.env.OAUTH);
+// @ts-ignore
+ComfyJS.Init(process.env.TWITCHUSER, process.env.OAUTH);
