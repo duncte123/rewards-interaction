@@ -1,5 +1,6 @@
-import SerialPort from 'serialport';
-import BaseHandler from './base/BaseHandler.js';
+import SerialPort, {PortInfo} from 'serialport';
+import BaseHandler from './base/BaseHandler';
+import {OnRewardExtra} from "@duncte123/comfy.js";
 
 export default class ChangeLedColor extends BaseHandler {
   // red, orange, dark_yellow, yellow, light_yellow, green, pea_green, cyan, light_blue, sky_blue, blue, dark_orchid, magenta, purple, pink
@@ -9,7 +10,7 @@ export default class ChangeLedColor extends BaseHandler {
    * @type {SerialPort}
    * @private
    */
-  _port = null;
+  private _port: SerialPort|null = null;
   _lastColor = -1;
   _colors = [
     'red',
@@ -32,7 +33,7 @@ export default class ChangeLedColor extends BaseHandler {
   constructor() {
     super();
 
-    SerialPort.list().then((ports) =>  {
+    SerialPort.list().then((ports: PortInfo[]) => {
       if (ports.length === 0) {
         this.log('No ports to connect to, disabling feature');
         return;
@@ -42,6 +43,7 @@ export default class ChangeLedColor extends BaseHandler {
         const portName = ports[0].path
 
         // connect to the port
+        // @ts-ignore
         this._port = new SerialPort(portName, {
           baudRate: 115200,
           // Look for return and newline at the end of each data packet
@@ -59,6 +61,10 @@ export default class ChangeLedColor extends BaseHandler {
   }
 
   setupHandlers() {
+    if (this._port == null) {
+      return;
+    }
+
     this._port.on('error', (err) => {
       this.log('ESP Error: ', err.message);
     });
@@ -70,7 +76,8 @@ export default class ChangeLedColor extends BaseHandler {
     });
   }
 
-  handle(user, reward, cost, message, extra) {
+
+  handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra) {
     if (this._colors.includes(message)) {
       const colorNum = this._colors.indexOf(message);
       this.setLedColor(colorNum);
@@ -88,7 +95,7 @@ export default class ChangeLedColor extends BaseHandler {
     this.setLedColor(randomColor);
   }
 
-  setLedColor(colorNum) {
+  setLedColor(colorNum: number): void {
     // wait a few seconds if the port is not connected yet
     if (this._port === null) {
       this.log('Port is null, not proceeding');

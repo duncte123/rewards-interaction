@@ -1,7 +1,9 @@
+import {OnRewardExtra} from '@duncte123/comfy.js';
+
 /**
  * @abstract
  */
-export default class BaseHandler {
+export default abstract class BaseHandler {
   /**
    * @abstract
    * @param {string} user
@@ -10,16 +12,14 @@ export default class BaseHandler {
    * @param {string} message
    * @param {object} extra
    */
-  handle(user, reward, cost, message, extra) {
-    throw new Error('Abstract');
-  }
+  abstract handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra): void;
 
   /**
    * Logs a message to the console
    *
    * @param {any} message
    */
-  log(...message) {
+  log(...message: any): void {
     console.log(`[${this.constructor.name}]`, ...message)
   }
 }

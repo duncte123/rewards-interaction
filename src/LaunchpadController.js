@@ -2,7 +2,7 @@ import Launchpad from './apis/launchpad/index.js';
 // TODO: temp until obs-websocket fixes a bug
 import robot from 'robotjs';
 import * as obs from './apis/obs.js';
-import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
+import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.ts';
 
 export default class LaunchpadController {
   /**
