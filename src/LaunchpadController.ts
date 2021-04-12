@@ -79,7 +79,7 @@ export default class LaunchpadController {
       console.log(`Connected to ${name}`);
 
       this.init();
-    })
+    });
   }
 
   private init() {
