@@ -4,14 +4,21 @@ import robot from 'robotjs';
 import * as obs from './apis/obs.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
 
+type lpBtnConfig = {
+  [key: number]: {
+    color: string,
+    handler: () => void|Promise<void>
+  }
+}
+
 export default class LaunchpadController {
   /**
    * {Launchpad}
    */
-  #lp;
-  #activeColor = '#FF0000';
+  private lp: Launchpad;
+  private activeColor = '#FF0000';
   // TODO: store mapped values of colors as this takes too long to boot
-  #buttonConfig = {
+  private buttonConfig: lpBtnConfig = {
     81: {
       color: '#d745df',
       handler: () => obs.selectScene('main stream'),
@@ -66,37 +73,39 @@ export default class LaunchpadController {
   };
 
   constructor() {
-    this.#lp = new Launchpad();
+    this.lp = new Launchpad();
 
-    this.#lp.once('ready', (name) => {
+    this.lp.once('ready', (name: string) => {
       console.log(`Connected to ${name}`);
 
-      this.#init();
+      this.init();
     });
   }
 
-  #init() {
-    this.#lp.allOff();
+  private init() {
+    this.lp.allOff();
 
-    for (const button of Object.keys(this.#buttonConfig)) {
-      const color = this.#buttonConfig[button].color;
+    // @ts-ignore
+    const keys: number[] = Object.keys(this.buttonConfig);
+    for (const button of keys) {
+      const color = this.buttonConfig[button].color;
 
-      this.#lp.setButtonHex(button, color);
+      this.lp.setButtonHex(button, color);
     }
 
-    this.#lp.on('gridDown', (note) => {
+    this.lp.on('gridDown', (note: number) => {
       // no need to await
-      this.#handle(note);
+      this.handle(note);
     });
 
-    this.#lp.on('sceneDown', (note) => {
+    this.lp.on('sceneDown', (note: number) => {
       // no need to await
-      this.#handle(note);
+      this.handle(note);
     });
   }
 
-  async #handle(note) {
-    if (!(note in this.#buttonConfig)) {
+  private async handle(note: number) {
+    if (!(note in this.buttonConfig)) {
       console.log('Missing handler for note ' + note);
       return;
     }
@@ -104,11 +113,11 @@ export default class LaunchpadController {
     try {
       // the websocket is fast enough to have this not be needed anymore
       // set the color to active
-      this.#lp.setButtonHex(note, this.#activeColor);
+      this.lp.setButtonHex(note, this.activeColor);
       // handle the function
-      await this.#buttonConfig[note].handler();
+      await this.buttonConfig[note].handler();
       // reset the color
-      this.#lp.setButtonHex(note, this.#buttonConfig[note].color);
+      this.lp.setButtonHex(note, this.buttonConfig[note].color);
     } catch (e) {
       console.log(e);
     }
@@ -124,6 +133,7 @@ export default class LaunchpadController {
     // I would say not storing this object is bad practice
     const handler = new SimpleSoundHandler('honks', 'goose');
 
-    await handler.handle()
+    // @ts-ignore
+    await handler.handle();
   }
 }
