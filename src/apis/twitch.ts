@@ -34,8 +34,6 @@ class Twitch {
     });
   }
 
-  public test(): void {}
-
   public async playAds(length = 30): Promise<void> {
     if (!this.broadcasterId) {
       console.log('MISSING BROADCASTER ID, ADS WILL NOT WORK');
