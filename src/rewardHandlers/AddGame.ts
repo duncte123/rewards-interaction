@@ -6,6 +6,11 @@ export default class AddGame extends BaseHandler {
   async handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra): Promise<void> {
     const auth = await getAuth();
 
+    if (auth == null) {
+      this.log('AUTH NOT LOADED');
+      return;
+    }
+
     addNewGameToSheet(message, user, auth);
   }
 }

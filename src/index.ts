@@ -54,9 +54,9 @@ ComfyJS.onReward = (user, reward, cost, message, extra) => {
   }
 };
 
-/*ComfyJS.onRaid = (user, viewers, extra) => {
-  // TODO: things
-};*/
+ComfyJS.onRaid = (user, viewers, extra) => {
+  console.log(`RAID TEST EVENT FROM ${user} with ${viewers} people, extra:`, extra);
+};
 
 /*ComfyJS.onCommand = (user, command, message, flags, extra) => {
   //
