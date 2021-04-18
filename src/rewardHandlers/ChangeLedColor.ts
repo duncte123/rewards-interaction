@@ -60,7 +60,7 @@ export default class ChangeLedColor extends BaseHandler {
     });
   }
 
-  setupHandlers() {
+  private setupHandlers(): void {
     if (this._port == null) {
       return;
     }
@@ -78,24 +78,26 @@ export default class ChangeLedColor extends BaseHandler {
 
 
   handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra) {
-    if (this._colors.includes(message)) {
-      const colorNum = this._colors.indexOf(message);
+    const messageLower = message.toLowerCase();
+
+    if (this._colors.includes(messageLower)) {
+      const colorNum = this._colors.indexOf(messageLower);
       this.setLedColor(colorNum);
       return;
     }
 
     this.log('Selecting random color')
-    let randomColor = Math.floor(Math.random() * this._colors.length);
+    let randomColor;
 
-    // "Randomly" select a different color
-    while (randomColor === this._lastColor) {
+    // "Randomly" select a different color if it is the same as the current color
+    do {
       randomColor = Math.floor(Math.random() * this._colors.length);
-    }
+    } while (randomColor === this._lastColor);
 
     this.setLedColor(randomColor);
   }
 
-  setLedColor(colorNum: number): void {
+  private setLedColor(colorNum: number): void {
     // wait a few seconds if the port is not connected yet
     if (this._port === null) {
       this.log('Port is null, not proceeding');
