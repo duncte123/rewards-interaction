@@ -33,7 +33,7 @@ class Twitch {
 
   public async getUserInfo(login: string): Promise<TwitchUser|null> {
     try {
-      const { data } = await this.http.get('/users', {
+      const { data: { data } } = await this.http.get('/users', {
         params: { login }
       });
 
@@ -52,7 +52,7 @@ class Twitch {
 
   public async getChannelInfo(userId: string): Promise<TwitchChannel|null> {
     try {
-      const { data } = await this.http.get('/channels', {
+      const { data: { data } } = await this.http.get('/channels', {
         params: { 'broadcaster_id': userId }
       });
 
