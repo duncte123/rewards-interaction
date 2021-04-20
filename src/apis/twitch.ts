@@ -1,9 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import dotenv from 'dotenv';
+import { TwitchChannel, TwitchUser } from './types/twitchtypes.js';
 
 class Twitch {
-  static INSTANCE: Twitch;
-
   private http: AxiosInstance;
   private broadcasterId: string = '';
 
@@ -22,16 +21,52 @@ class Twitch {
       }
     });
 
-    this.http.get('/users', {
-      params: {'login': env.TWITCHUSER}
-    }).then(({data: {data}}) => {
-      if (!data.length) {
+    this.getUserInfo(env.TWITCHUSER).then((user) => {
+      if (!user) {
         throw new Error('No data for twitch user, twitch api will not work properly');
       }
 
-      this.broadcasterId = data[0].id;
+      this.broadcasterId = user.id;
       console.log(`Broadcaster id for ${env.TWITCHUSER} is ${this.broadcasterId}`);
     });
+  }
+
+  public async getUserInfo(login: string): Promise<TwitchUser|null> {
+    try {
+      const { data } = await this.http.get('/users', {
+        params: { login }
+      });
+
+      if (!data.length) {
+        console.error(`Failed to look up info for ${login}`);
+        return null;
+      }
+
+      return data[0];
+
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  public async getChannelInfo(userId: string): Promise<TwitchChannel|null> {
+    try {
+      const { data } = await this.http.get('/channels', {
+        params: { 'broadcaster_id': userId }
+      });
+
+      if (!data.length) {
+        console.error(`Channel data for ${userId} failed`);
+        return null;
+      }
+
+      return data[0];
+
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   public async playAds(length = 30): Promise<void> {
@@ -50,14 +85,6 @@ class Twitch {
     } catch (e) {
       console.log('Error playing ads', e.response.data);
     }
-  }
-
-  public static getInstance(): Twitch {
-    if (Twitch.INSTANCE == null) {
-      Twitch.INSTANCE = new Twitch();
-    }
-
-    return Twitch.INSTANCE;
   }
 }
 

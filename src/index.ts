@@ -2,6 +2,7 @@ import ComfyJS from '@duncte123/comfy.js';
 import dotenv from 'dotenv';
 
 import { obs } from './apis/obs.js';
+import Twitch from './apis/twitch.js';
 import LaunchpadController from './LaunchpadController.js';
 
 import SwitchCam from './rewardHandlers/SwitchCam.js';
@@ -54,9 +55,34 @@ ComfyJS.onReward = (user, reward, cost, message, extra) => {
   }
 };
 
-ComfyJS.onRaid = (user, viewers, extra) => {
+ComfyJS.onRaid = async (user, viewers, extra) => {
   console.log(`RAID TEST EVENT FROM ${user} with ${viewers} people, extra:`, extra);
+
+  const userInfo = await Twitch.getUserInfo(user);
+
+  if (!userInfo) {
+    // say thanks anyway?
+    return;
+  }
+
+  const channelInfo = await Twitch.getChannelInfo(userInfo.id);
+  let gameInfo = '';
+
+  if (channelInfo) {
+    gameInfo = `I've heard that ${channelInfo.game_name} is a fun game ;)`;
+  }
+
+  const msg = `@${user} thank you for the raid, if you haven't already to check them out over at https://twitch.tv/${user}\n${gameInfo}`;
+
+  // Does a falsy check underwater
+  ComfyJS.Say(msg, '');
 };
+
+/*ComfyJS.onChat = (user, message, flags, self, extra) => {
+  if (flags.highlighted) {
+    // show in obs
+  }
+};*/
 
 /*ComfyJS.onCommand = (user, command, message, flags, extra) => {
   //
