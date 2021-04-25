@@ -3,6 +3,7 @@ import { LaunchpadMK2, colors } from 'launchpad.js';
 import robot from 'robotjs';
 import * as obs from './apis/obs.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
+import { sleep } from './helpers.js';
 
 const { colorFromHex } = colors;
 
@@ -33,7 +34,7 @@ export default class LaunchpadController {
 
     77: {
       color: '#c52aa9',
-      handler: LaunchpadController.toggleC920,
+      handler: LaunchpadController.showC920,
     },
     73: {
       color:  '#9929d5',
@@ -45,6 +46,10 @@ export default class LaunchpadController {
       handler: () => robot.keyTap('f19'), //temp
     },
 
+    67: {
+      color: '#c52aa9',
+      handler: LaunchpadController.showMainCam,
+    },
     63: {
       color: '#88142a',
       handler: () => obs.selectScene('end of stream'),
@@ -117,10 +122,23 @@ export default class LaunchpadController {
     }
   }
 
-  static async toggleC920() {
-    const { visible } = await obs.getSourceProperties('camera', 'c920');
+  static async showC920() {
+    await obs.setVisibilityOnSource('camera', 'c920', true);
 
-    return obs.setVisibilityOnSource('camera', 'c920', !visible);
+    // wait a bit for the cam to start
+    await sleep(1000);
+    // await obs.setVisibilityOnSource('camera', 'cam', false);
+    await obs.setVisibilityOnSource('camera', 'wireless-cam', false);
+  }
+
+  static async showMainCam() {
+    // leave the main cam running
+    // await obs.setVisibilityOnSource('camera', 'cam', true);
+
+    // wait a bit for the cam to start
+    // await sleep(500);
+    await obs.setVisibilityOnSource('camera', 'wireless-cam', false);
+    await obs.setVisibilityOnSource('camera', 'c920', false);
   }
 
   static async triggerHonk() {
