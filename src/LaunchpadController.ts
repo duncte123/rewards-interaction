@@ -1,8 +1,10 @@
-import Launchpad from './apis/launchpad/index.js';
+import { LaunchpadMK2, colors } from 'launchpad.js';
 // TODO: temp until obs-websocket fixes a bug
 import robot from 'robotjs';
 import * as obs from './apis/obs.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
+
+const { colorFromHex } = colors;
 
 type lpBtnConfig = {
   [key: number]: {
@@ -12,10 +14,7 @@ type lpBtnConfig = {
 }
 
 export default class LaunchpadController {
-  /**
-   * {Launchpad}
-   */
-  private lp: Launchpad;
+  private lp: LaunchpadMK2;
   private activeColor = '#FF0000';
   // TODO: store mapped values of colors as this takes too long to boot
   private buttonConfig: lpBtnConfig = {
@@ -73,7 +72,7 @@ export default class LaunchpadController {
   };
 
   constructor() {
-    this.lp = new Launchpad();
+    this.lp = new LaunchpadMK2();
 
     this.lp.once('ready', (name: string) => {
       console.log(`Connected to ${name}`);
@@ -90,15 +89,10 @@ export default class LaunchpadController {
     for (const button of keys) {
       const color = this.buttonConfig[button].color;
 
-      this.lp.setButtonHex(button, color);
+      this.lp.setButtonColor(button, colorFromHex(color));
     }
 
-    this.lp.on('gridDown', (note: number) => {
-      // no need to await
-      this.handle(note);
-    });
-
-    this.lp.on('sceneDown', (note: number) => {
+    this.lp.on('buttonDown', (note: number) => {
       // no need to await
       this.handle(note);
     });
@@ -113,11 +107,11 @@ export default class LaunchpadController {
     try {
       // the websocket is fast enough to have this not be needed anymore
       // set the color to active
-      this.lp.setButtonHex(note, this.activeColor);
+      this.lp.setButtonColor(note, colorFromHex(this.activeColor));
       // handle the function
       await this.buttonConfig[note].handler();
       // reset the color
-      this.lp.setButtonHex(note, this.buttonConfig[note].color);
+      this.lp.setButtonColor(note, colorFromHex(this.buttonConfig[note].color));
     } catch (e) {
       console.log(e);
     }
