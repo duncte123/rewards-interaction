@@ -13,6 +13,7 @@ import ChangeLedColor from './rewardHandlers/ChangeLedColor.js';
 import { utils as lpUtils } from 'launchpad.js';
 import PlayAds from './rewardHandlers/PlayAds.js';
 import BaseHandler from './rewardHandlers/base/BaseHandler.js';
+import EmoteOnlyChat from './rewardHandlers/EmoteOnlyChat.js';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ const rewardHandlers: handlers = {
   '13449cc4-4f9e-4cf3-9086-3e9a27ccfa8b': new AddGame(),
   '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
   '5127c0b4-7bc1-462e-87fa-ed0784c1bbf9': new PlayAds(),
+  '4829aa64-e782-45bb-b719-eb92286b1157': new EmoteOnlyChat(),
 };
 
 console.log('Connecting to launchpad');

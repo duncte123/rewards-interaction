@@ -112,7 +112,8 @@ export default class LaunchpadController {
     try {
       // the websocket is fast enough to have this not be needed anymore
       // set the color to active
-      this.lp.setButtonColor(note, colorFromHex(this.activeColor));
+      this.lp.pulse(note, 5);
+      // this.lp.setButtonColor(note, colorFromHex(this.activeColor));
       // handle the function
       await this.buttonConfig[note].handler();
       // reset the color
