@@ -23,7 +23,7 @@ export type TwitchChannel = {
 
 export type TwitchPollCreateRequest = {
   // required
-  broadcaster_id: string;
+  broadcaster_id?: string; // will be inserted before we do the request
   title: string;
   choices: TwitchPollRequestChoice[];
   duration: number;

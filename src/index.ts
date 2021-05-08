@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import { obs } from './apis/obs.js';
 import Twitch from './apis/twitch.js';
-import LaunchpadController from './LaunchpadController.js';
+import LaunchpadController from './launchpad/LaunchpadController.js';
 
 import SwitchCam from './rewardHandlers/SwitchCam.js';
 import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import dotenv from 'dotenv';
-import { TwitchChannel, TwitchUser } from './types/twitchtypes.js';
+import { TwitchChannel, TwitchPollCreateRequest, TwitchPollResponse, TwitchUser } from './types/twitchtypes.js';
 
 class Twitch {
   private http: AxiosInstance;
@@ -85,6 +85,45 @@ class Twitch {
     } catch (e) {
       console.log('Error playing ads', e.response.data);
     }
+  }
+
+  public async createPoll(options: TwitchPollCreateRequest): Promise<TwitchPollResponse|null> {
+    try {
+      const createOptions: TwitchPollCreateRequest = {
+        'broadcaster_id': this.broadcasterId,
+        ...options,
+      };
+
+      const { data: data } = await this.http.post('/polls', createOptions);
+
+      console.log(data);
+
+      return data;
+    } catch (e) {
+      console.log('Error creating poll', e.response.data);
+    }
+
+    return null;
+  }
+
+  public async getPollResults(pollId: string): Promise<TwitchPollResponse|null> {
+    try {
+
+      const { data: data } = await this.http.get('/polls', {
+        params: {
+          'broadcaster_id': this.broadcasterId,
+          id: pollId,
+        }
+      });
+
+      console.log(data);
+
+      return data;
+    } catch (e) {
+      console.log('Error fetching poll', e.response.data);
+    }
+
+    return null;
   }
 }
 

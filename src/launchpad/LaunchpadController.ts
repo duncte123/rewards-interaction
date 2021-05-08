@@ -1,9 +1,8 @@
 import { LaunchpadMK2, colors } from 'launchpad.js';
 // TODO: temp until obs-websocket fixes a bug
 import robot from 'robotjs';
-import * as obs from './apis/obs.js';
-import SimpleSoundHandler from './rewardHandlers/SimpleSoundHandler.js';
-import { sleep } from './helpers.js';
+import * as obs from '../apis/obs.js';
+import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
 
 const { colorFromHex } = colors;
 
@@ -34,7 +33,7 @@ export default class LaunchpadController {
 
     77: {
       color: '#c52aa9',
-      handler: LaunchpadController.showC920,
+      handler: showC920,
     },
     73: {
       color:  '#9929d5',
@@ -48,7 +47,7 @@ export default class LaunchpadController {
 
     67: {
       color: '#c52aa9',
-      handler: LaunchpadController.showMainCam,
+      handler: showMainCam,
     },
     63: {
       color: '#88142a',
@@ -72,7 +71,7 @@ export default class LaunchpadController {
 
     11: {
       color: '#d49308',
-      handler: LaunchpadController.triggerHonk,
+      handler: triggerHonk,
     },
   };
 
@@ -121,32 +120,5 @@ export default class LaunchpadController {
     } catch (e) {
       console.log(e);
     }
-  }
-
-  static async showC920() {
-    await obs.setVisibilityOnSource('camera', 'c920', true);
-
-    // wait a bit for the cam to start
-    await sleep(1000);
-    // await obs.setVisibilityOnSource('camera', 'cam', false);
-    await obs.setVisibilityOnSource('camera', 'wireless-cam', false);
-  }
-
-  static async showMainCam() {
-    // leave the main cam running
-    // await obs.setVisibilityOnSource('camera', 'cam', true);
-
-    // wait a bit for the cam to start
-    // await sleep(500);
-    await obs.setVisibilityOnSource('camera', 'wireless-cam', false);
-    await obs.setVisibilityOnSource('camera', 'c920', false);
-  }
-
-  static async triggerHonk() {
-    // I would say not storing this object is bad practice
-    const handler = new SimpleSoundHandler('honks', 'goose');
-
-    // @ts-ignore
-    await handler.handle();
   }
 }

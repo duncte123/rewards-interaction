@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
+    "launchpad": "tsc && node dist/launchpadOnly.js",
     "build": "tsc -b"
   },
   "dependencies": {

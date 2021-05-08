@@ -1,4 +1,4 @@
 // connect to the launchpad
-import LaunchpadController from './LaunchpadController.js';
+import LaunchpadController from './launchpad/LaunchpadController.js';
 
 new LaunchpadController();
