@@ -88,17 +88,18 @@ class Twitch {
   }
 
   public async createPoll(options: TwitchPollCreateRequest): Promise<TwitchPollResponse|null> {
+    if (options.duration < 15) {
+      throw new Error('Duration must be at least 15');
+    }
+
     try {
       const createOptions: TwitchPollCreateRequest = {
         'broadcaster_id': this.broadcasterId,
         ...options,
       };
+      const { data: { data } } = await this.http.post('/polls', createOptions);
 
-      const { data: data } = await this.http.post('/polls', createOptions);
-
-      console.log(data);
-
-      return data;
+      return data[0];
     } catch (e) {
       console.log('Error creating poll', e.response.data);
     }
@@ -106,19 +107,17 @@ class Twitch {
     return null;
   }
 
-  public async getPollResults(pollId: string): Promise<TwitchPollResponse|null> {
+  public async getPollInfo(pollId: string): Promise<TwitchPollResponse|null> {
     try {
 
-      const { data: data } = await this.http.get('/polls', {
+      const { data: { data } } = await this.http.get('/polls', {
         params: {
           'broadcaster_id': this.broadcasterId,
           id: pollId,
         }
       });
 
-      console.log(data);
-
-      return data;
+      return data[0];
     } catch (e) {
       console.log('Error fetching poll', e.response.data);
     }
