@@ -2,6 +2,7 @@ import { LaunchpadMK2, colors } from 'launchpad.js';
 // TODO: temp until obs-websocket fixes a bug
 import robot from 'robotjs';
 import * as obs from '../apis/obs.js';
+import * as te from './twitchExecutors.js';
 import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
 
 const { colorFromHex } = colors;
@@ -18,6 +19,11 @@ export default class LaunchpadController {
   private activeColor = '#FF0000';
   // TODO: store mapped values of colors as this takes too long to boot
   private buttonConfig: lpBtnConfig = {
+    110: {
+      color: '#58c10f',
+      handler: te.makePBPoll,
+    },
+
     81: {
       color: '#d745df',
       handler: () => obs.selectScene('main stream'),

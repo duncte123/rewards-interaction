@@ -1,13 +1,14 @@
 import Twitch from '../apis/twitch.js';
+import { sleep } from '../helpers.js';
 
 let currentPollId: string = '';
 
 export function bla() {}
 
-export async function makePBPoll(): Promise<number> {
+export async function makePBPoll(): Promise<void> {
   if (currentPollId) {
     console.log('There is a poll active atm, not creating a new one');
-    return -1;
+    return;
   }
 
   const poll = await Twitch.createPoll({
@@ -20,18 +21,20 @@ export async function makePBPoll(): Promise<number> {
         title: 'No',
       },
     ],
-    duration: 15,
+    duration: 30,
     bits_voting_enabled: true,
     bits_per_vote: 10,
   });
 
   if (!poll) {
-    return -1;
+    return;
   }
 
   currentPollId = poll.id;
 
-  return poll.duration;
+  await sleep(poll.duration * 1000);
+
+  await showCurrentPollResults();
 }
 
 export async function showCurrentPollResults() {
@@ -41,6 +44,9 @@ export async function showCurrentPollResults() {
   }
 
   const poll = await Twitch.getPollInfo(currentPollId);
+
+  // rest the current poll
+  currentPollId = '';
 
   if (!poll) {
     console.log('Missing data for poll');
