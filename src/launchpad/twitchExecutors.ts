@@ -1,17 +1,11 @@
 import Twitch from '../apis/twitch.js';
 import { sleep } from '../helpers.js';
+import { TwitchPollCreateRequest } from '../apis/types/twitchtypes.js';
 
 let currentPollId: string = '';
 
-export function bla() {}
-
 export async function makePBPoll(): Promise<void> {
-  if (currentPollId) {
-    console.log('There is a poll active atm, not creating a new one');
-    return;
-  }
-
-  const poll = await Twitch.createPoll({
+  await makePoll({
     title: 'Will this run PB?',
     choices: [
       {
@@ -21,20 +15,7 @@ export async function makePBPoll(): Promise<void> {
         title: 'No',
       },
     ],
-    duration: 30,
-    bits_voting_enabled: true,
-    bits_per_vote: 10,
   });
-
-  if (!poll) {
-    return;
-  }
-
-  currentPollId = poll.id;
-
-  await sleep(poll.duration * 1000);
-
-  await showCurrentPollResults();
 }
 
 export async function showCurrentPollResults() {
@@ -68,4 +49,32 @@ ${
 }`;
 
   console.log(fileContents);
+}
+
+// The only thing that changes between al the polls is the content
+async function makePoll(options: Partial<TwitchPollCreateRequest>) {
+  if (currentPollId) {
+    console.log('There is a poll active atm, not creating a new one');
+    return;
+  }
+
+  const poll = await Twitch.createPoll({
+    // these two will be overwritten anyway
+    title: '',
+    choices: [],
+    ...options,
+    duration: 30,
+    bits_voting_enabled: true,
+    bits_per_vote: 10,
+  });
+
+  if (!poll) {
+    return;
+  }
+
+  currentPollId = poll.id;
+
+  await sleep(poll.duration * 1000);
+
+  await showCurrentPollResults();
 }

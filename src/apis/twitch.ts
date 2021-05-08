@@ -31,7 +31,7 @@ class Twitch {
     });
   }
 
-  public async getUserInfo(login: string): Promise<TwitchUser|null> {
+  public async getUserInfo(login: string): Promise<Readonly<TwitchUser>|null> {
     try {
       const { data: { data } } = await this.http.get('/users', {
         params: { login }
@@ -50,7 +50,7 @@ class Twitch {
     }
   }
 
-  public async getChannelInfo(userId: string): Promise<TwitchChannel|null> {
+  public async getChannelInfo(userId: string): Promise<Readonly<TwitchChannel>|null> {
     try {
       const { data: { data } } = await this.http.get('/channels', {
         params: { 'broadcaster_id': userId }
@@ -87,7 +87,7 @@ class Twitch {
     }
   }
 
-  public async createPoll(options: TwitchPollCreateRequest): Promise<TwitchPollResponse|null> {
+  public async createPoll(options: TwitchPollCreateRequest): Promise<Readonly<TwitchPollResponse>|null> {
     if (options.duration < 15) {
       throw new Error('Duration must be at least 15');
     }
@@ -107,7 +107,7 @@ class Twitch {
     return null;
   }
 
-  public async getPollInfo(pollId: string): Promise<TwitchPollResponse|null> {
+  public async getPollInfo(pollId: string): Promise<Readonly<TwitchPollResponse>|null> {
     try {
 
       const { data: { data } } = await this.http.get('/polls', {

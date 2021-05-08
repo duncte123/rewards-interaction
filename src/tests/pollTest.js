@@ -1,8 +1,7 @@
-import { bla, makePBPoll, showCurrentPollResults } from '../launchpad/twitchExecutors.js';
+import { makePBPoll, showCurrentPollResults } from '../launchpad/twitchExecutors.js';
 import { sleep } from '../helpers.js';
 
 (async () => {
-  bla();
   console.log('sleeping for 2 seconds');
   await sleep(2 * 1000);
   const duration = await makePBPoll();
