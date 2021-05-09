@@ -1,12 +1,9 @@
 import * as obs from '../apis/obs.js';
-import { sleep } from '../helpers.js';
 import SimpleSoundHandler from '../rewardHandlers/SimpleSoundHandler.js';
 
 export async function showC920() {
   await obs.setVisibilityOnSource('camera', 'c920', true);
 
-  // wait a bit for the cam to start
-  await sleep(1000);
   // await obs.setVisibilityOnSource('camera', 'cam', false);
   await obs.setVisibilityOnSource('camera', 'wireless-cam', false);
 }
