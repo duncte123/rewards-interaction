@@ -107,6 +107,10 @@ class Twitch {
     return null;
   }
 
+  public async cancelPoll(pollId: string): Promise<void> {
+    //
+  }
+
   public async getPollInfo(pollId: string): Promise<Readonly<TwitchPollResponse>|null> {
     try {
 
