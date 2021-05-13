@@ -102,12 +102,20 @@ async function authorize(credentials: credentialsType): Promise<OAuth2Client> {
     const token = fs.readFileSync(TOKEN_PATH, 'utf-8');
     const jsonToken: tokenType = JSON.parse(token);
 
+    oAuth2Client.setCredentials(jsonToken);
+
+    try {
+      const accessToken = await oAuth2Client.getAccessToken();
+      console.log(accessToken);
+      return oAuth2Client;
+    } catch (e) {
+      console.log(e);
+    }
+
     // If the token is expired: generate a new one
     if (Date.now() >= jsonToken.expiry_date) {
       return await getNewToken(oAuth2Client);
     }
-
-    oAuth2Client.setCredentials(jsonToken);
   } else {
     await getNewToken(oAuth2Client);
   }
