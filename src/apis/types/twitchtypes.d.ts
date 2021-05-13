@@ -39,7 +39,7 @@ export type TwitchPollRequestChoice = {
   title: string;
 };
 
-export type TwitchPollUpdateRequest = {
+export type TwitchPollEndRequest = {
   broadcaster_id: string;
   id: string;
   status: 'TERMINATED' | 'ARCHIVED';

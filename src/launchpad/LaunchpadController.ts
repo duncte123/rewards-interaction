@@ -4,19 +4,32 @@ import robot from 'robotjs';
 import * as obs from '../apis/obs.js';
 import * as te from './twitchExecutors.js';
 import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
+import KeylightApi from '../apis/elgato/keylightapi.js';
+import { sleep } from '../helpers.js';
 
 const { colorFromHex } = colors;
 
+type lpBtnConfigElement = {
+  color: string,
+  handler: () => void|Promise<void>,
+  toggle?: {
+    handler: (active: boolean) => void|Promise<void>,
+    fetchInitialState: () => boolean|Promise<boolean>
+  },
+};
+
 type lpBtnConfig = {
-  [key: number]: {
-    color: string,
-    handler: () => void|Promise<void>
-  }
+  [key: number]: lpBtnConfigElement,
 }
+
+type ToggleButton = {
+  [key: number]: boolean,
+};
 
 export default class LaunchpadController {
   private lp: LaunchpadMK2;
   private activeColor = '#FF0000';
+  private toggledButtons: ToggleButton = [];
   // TODO: store mapped values of colors as this takes too long to boot
   private buttonConfig: lpBtnConfig = {
     110: {
@@ -70,6 +83,31 @@ export default class LaunchpadController {
       handler: () => obs.toggleStudioMode(),
     },
 
+    29: {
+      color: '#e8e409',
+      handler: () => {/* required but ignored */},
+      toggle: {
+        handler: (active: boolean) => {
+          KeylightApi.updateAllLights({
+            // @ts-ignore this should be partial smh
+            lights: [{
+              on: active ? 1 : 0
+            }]
+          })
+        },
+        fetchInitialState: async () => {
+          let lights = KeylightApi.getLights()
+
+          while (!lights.length) {
+            await sleep(100);
+            lights = KeylightApi.getLights()
+          }
+
+          return Boolean(lights[0].options.lights[0].on);
+        },
+      }
+    },
+
     19: {
       color: '#16c869',
       handler: () => obs.triggerTransition(),
@@ -96,10 +134,15 @@ export default class LaunchpadController {
 
     // @ts-ignore
     const keys: number[] = Object.keys(this.buttonConfig);
-    for (const button of keys) {
-      const color = this.buttonConfig[button].color;
 
-      this.lp.setButtonColor(button, colorFromHex(color));
+    for (const button of keys) {
+      const config = this.buttonConfig[button];
+
+      if (config.toggle) {
+        this.setInitialStateForButton(button, config);
+      }
+
+      this.lp.setButtonColor(button, colorFromHex(config.color));
     }
 
     this.lp.on('buttonDown', (note: number) => {
@@ -108,9 +151,43 @@ export default class LaunchpadController {
     });
   }
 
+  private async setInitialStateForButton(button: number, config: lpBtnConfigElement): Promise<void> {
+    // @ts-ignore
+    const initialState = await config.toggle.fetchInitialState();
+
+    if (initialState) {
+      this.toggledButtons[button] = true;
+      this.lp.setButtonColor(button, colorFromHex(this.activeColor));
+    } else {
+      this.lp.setButtonColor(button, colorFromHex(config.color));
+    }
+  }
+
   private async handle(note: number) {
     if (!(note in this.buttonConfig)) {
       console.log('Missing handler for note ' + note);
+      return;
+    }
+
+    const config = this.buttonConfig[note];
+
+    if (config.toggle) {
+      if (this.toggledButtons[note]) {
+        // toggle off
+        this.lp.setButtonColor(note, colorFromHex(config.color));
+
+        await config.toggle.handler(false);
+
+        this.toggledButtons[note] = false;
+        return;
+      }
+
+      this.lp.setButtonColor(note, colorFromHex(this.activeColor));
+
+      await config.toggle.handler(true);
+
+      this.toggledButtons[note] = true;
+
       return;
     }
 
@@ -120,9 +197,9 @@ export default class LaunchpadController {
       this.lp.pulse(note, 5);
       // this.lp.setButtonColor(note, colorFromHex(this.activeColor));
       // handle the function
-      await this.buttonConfig[note].handler();
+      await config.handler();
       // reset the color
-      this.lp.setButtonColor(note, colorFromHex(this.buttonConfig[note].color));
+      this.lp.setButtonColor(note, colorFromHex(config.color));
     } catch (e) {
       console.log(e);
     }

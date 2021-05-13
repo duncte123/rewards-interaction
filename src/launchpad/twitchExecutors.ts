@@ -48,6 +48,7 @@ ${
   ).join('\n')
 }`;
 
+  // TODO: display in obs
   console.log(fileContents);
 }
 

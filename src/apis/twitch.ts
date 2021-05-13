@@ -1,6 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import dotenv from 'dotenv';
-import { TwitchChannel, TwitchPollCreateRequest, TwitchPollResponse, TwitchUser } from './types/twitchtypes.js';
+import {
+  TwitchChannel,
+  TwitchPollCreateRequest,
+  TwitchPollEndRequest,
+  TwitchPollResponse,
+  TwitchUser
+} from './types/twitchtypes.js';
 
 class Twitch {
   private http: AxiosInstance;
@@ -107,8 +113,20 @@ class Twitch {
     return null;
   }
 
-  public async cancelPoll(pollId: string): Promise<void> {
-    //
+  // soon?
+  public async endPoll(pollId: string): Promise<void> {
+    try {
+      const endRequest: TwitchPollEndRequest = {
+        'broadcaster_id': this.broadcasterId,
+        id: pollId,
+        status: 'TERMINATED'
+      };
+      const { data: { data } } = await this.http.patch('/polls', endRequest);
+
+      console.log('Successfully ended poll', data);
+    } catch (e) {
+      console.log('Error canceling poll', e.response.data);
+    }
   }
 
   public async getPollInfo(pollId: string): Promise<Readonly<TwitchPollResponse>|null> {
