@@ -107,18 +107,19 @@ async function authorize(credentials: credentialsType): Promise<OAuth2Client> {
     try {
       const { res } = await oAuth2Client.getAccessToken();
 
-      if (!res) {
+      if (res) {
+        const accessToken = res.data;
+
+        console.log(accessToken);
+
+        fs.writeFileSync(TOKEN_PATH, JSON.stringify(accessToken));
+
+        console.log('New token stored to', TOKEN_PATH);
+      } else {
         // noinspection ExceptionCaughtLocallyJS
-        throw new Error('RES IS NULL');
+        console.log('RES IS NULL, not updating token');
       }
 
-      const accessToken = res.data;
-
-      console.log(accessToken);
-
-      fs.writeFileSync(TOKEN_PATH, JSON.stringify(accessToken));
-
-      console.log('New token stored to', TOKEN_PATH);
       return oAuth2Client;
     } catch (e) {
       console.log(e);
