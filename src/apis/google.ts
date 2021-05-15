@@ -105,7 +105,15 @@ async function authorize(credentials: credentialsType): Promise<OAuth2Client> {
     oAuth2Client.setCredentials(jsonToken);
 
     try {
-      const accessToken = await oAuth2Client.getAccessToken();
+      const { res } = await oAuth2Client.getAccessToken();
+
+      if (!res) {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error('RES IS NULL');
+      }
+
+      const accessToken = res.data;
+
       console.log(accessToken);
 
       fs.writeFileSync(TOKEN_PATH, JSON.stringify(accessToken));
