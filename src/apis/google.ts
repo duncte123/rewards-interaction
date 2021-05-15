@@ -107,6 +107,10 @@ async function authorize(credentials: credentialsType): Promise<OAuth2Client> {
     try {
       const accessToken = await oAuth2Client.getAccessToken();
       console.log(accessToken);
+
+      fs.writeFileSync(TOKEN_PATH, JSON.stringify(accessToken));
+
+      console.log('New token stored to', TOKEN_PATH);
       return oAuth2Client;
     } catch (e) {
       console.log(e);
@@ -174,10 +178,11 @@ function getNewToken(oAuth2Client: OAuth2Client): Promise<OAuth2Client> {
   });
 }
 
-function listMajors(auth: OAuth2Client) {
+export function listMajors(auth: OAuth2Client) {
   const sheets = google.sheets({version: 'v4', auth});
   sheets.spreadsheets.values.get({
-    spreadsheetId: '1Qp8iwwlNHhoL6nxDuNC1r4OyDEWn98vZoTNMc1qwlv0',
+    // spreadsheetId: '1Qp8iwwlNHhoL6nxDuNC1r4OyDEWn98vZoTNMc1qwlv0',
+    spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
     range: 'Sheet1!A2:C',
   }, (err, res) => {
     if (err || !res) {

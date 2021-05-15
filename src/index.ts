@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import { obs } from './apis/obs.js';
 import Twitch from './apis/twitch.js';
-import * as googleAuth from './apis/google.js';
+import * as googleSheets from './apis/google.js';
 import LaunchpadController from './launchpad/LaunchpadController.js';
 
 import SwitchCam from './rewardHandlers/SwitchCam.js';
@@ -19,7 +19,15 @@ import EmoteOnlyChat from './rewardHandlers/EmoteOnlyChat.js';
 dotenv.config();
 
 // load the auth on startup
-googleAuth.getAuth();
+googleSheets.getAuth().then((auth) => {
+  if (auth == null) {
+    console.log('Missing auth for google sheets?');
+    return;
+  }
+
+  googleSheets.listMajors(auth);
+});
+
 
 type handlers = {
   [key: string]: BaseHandler;
