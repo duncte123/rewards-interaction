@@ -17,6 +17,22 @@ export async function makePBPoll(): Promise<void> {
     ],
   });
 }
+export async function makeSucceedPoll(): Promise<void> {
+  await makePoll({
+    title: 'Will I succeed this time?',
+    choices: [
+      {
+        title: 'Yes',
+      },
+      {
+        title: 'No',
+      },
+      {
+        title: '¯\\_(ツ)_/¯',
+      },
+    ],
+  });
+}
 
 export async function showCurrentPollResults() {
   if (!currentPollId) {
@@ -50,6 +66,12 @@ ${
 
   // TODO: display in obs
   console.log(fileContents);
+
+  /*writeFile('poll.txt', fileContents);
+
+  setTimeout(() => {
+    clearFile('poll.txt');
+  }, 5 * 1000);*/
 }
 
 // The only thing that changes between al the polls is the content

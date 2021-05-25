@@ -3,9 +3,10 @@ import { LaunchpadMK2, colors } from 'launchpad.js';
 import robot from 'robotjs';
 import * as obs from '../apis/obs.js';
 import * as te from './twitchExecutors.js';
-import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
+import { showMainCam, triggerHonk } from './obsExecutors.js';
 import KeylightApi from '../apis/elgato/keylightapi.js';
 import { sleep } from '../helpers.js';
+import { makeSucceedPoll } from './twitchExecutors.js';
 
 const { colorFromHex } = colors;
 
@@ -36,6 +37,10 @@ export default class LaunchpadController {
       color: '#58c10f',
       handler: te.makePBPoll,
     },
+    109: {
+      color: '#1ec985',
+      handler: te.makeSucceedPoll,
+    },
 
     81: {
       color: '#d745df',
@@ -50,10 +55,6 @@ export default class LaunchpadController {
       handler: () => obs.selectScene('starting soon'),
     },
 
-    77: {
-      color: '#c52aa9',
-      handler: showC920,
-    },
     73: {
       color:  '#9929d5',
       handler: () => obs.selectScene('be right back'),
