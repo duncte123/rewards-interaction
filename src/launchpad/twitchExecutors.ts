@@ -27,9 +27,6 @@ export async function makeSucceedPoll(): Promise<void> {
       {
         title: 'No',
       },
-      {
-        title: '¯\\_(ツ)_/¯',
-      },
     ],
   });
 }

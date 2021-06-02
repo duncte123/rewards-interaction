@@ -6,7 +6,6 @@ import * as te from './twitchExecutors.js';
 import { showMainCam, triggerHonk } from './obsExecutors.js';
 import KeylightApi from '../apis/elgato/keylightapi.js';
 import { sleep } from '../helpers.js';
-import { makeSucceedPoll } from './twitchExecutors.js';
 
 const { colorFromHex } = colors;
 
@@ -52,7 +51,25 @@ export default class LaunchpadController {
     },
     83: {
       color: '#92ee92',
-      handler: () => obs.selectScene('starting soon'),
+      handler: async () => {
+        await obs.selectScene('starting soon');
+        await obs.setVisibilityOnSource('starting soon', 'count down timer red', false);
+      },
+    },
+    84: {
+      color: '#2bcef1',
+      handler: async () => {
+        // get the old preview name
+        const oldScene = await obs.getPreviewSceneName();
+        // select the scene
+        await obs.selectScene('starting soon');
+        // Update starting soon to activate the timer
+        await obs.setVisibilityOnSource('starting soon', 'count down timer red', true);
+        // Transition the timer
+        await obs.triggerTransition({ 'with-transition': { name: 'Cut' } });
+        // go back to the old scene
+        await obs.setPreviewScene(oldScene);
+      },
     },
 
     73: {

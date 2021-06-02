@@ -71,3 +71,19 @@ export function setVisibilityOnSource(scene: string, source: string, visible: bo
     render: visible
   });
 }
+
+export async function getPreviewSceneName(): Promise<string> {
+  // get proper action that determines if studio mode is enabled or not
+  const request = await studioModeEnabled() ? 'GetPreviewScene' : 'GetCurrentScene';
+
+  return (await obs.send(request)).name;
+}
+
+export async function setPreviewScene(scene: string): Promise<void> {
+  // get proper action that determines if studio mode is enabled or not
+  const request = await studioModeEnabled() ? 'SetPreviewScene' : 'SetCurrentScene';
+
+  return obs.send(request, {
+    'scene-name': scene,
+  });
+}
