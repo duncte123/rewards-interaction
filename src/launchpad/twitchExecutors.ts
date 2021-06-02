@@ -67,7 +67,8 @@ ${
   /*writeFile('poll.txt', fileContents);
 
   setTimeout(() => {
-    clearFile('poll.txt');
+    clearFile('polls/title.txt');
+    clearFile('polls/responses.txt');
   }, 5 * 1000);*/
 }
 
