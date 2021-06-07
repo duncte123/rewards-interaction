@@ -6,6 +6,7 @@ import * as te from './twitchExecutors.js';
 import { showMainCam, triggerHonk } from './obsExecutors.js';
 import KeylightApi from '../apis/elgato/keylightapi.js';
 import { sleep } from '../helpers.js';
+import MuteSound from '../rewardHandlers/MuteSound.js';
 
 const { colorFromHex } = colors;
 
@@ -125,6 +126,11 @@ export default class LaunchpadController {
         },
       }
     },
+    /*28: {
+      color: '#c40d78',
+      // @ts-ignore
+      handler: () => new MuteSound().handle(),
+    },*/
 
     19: {
       color: '#16c869',

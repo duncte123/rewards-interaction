@@ -15,6 +15,7 @@ import { utils as lpUtils } from 'launchpad.js';
 import PlayAds from './rewardHandlers/PlayAds.js';
 import BaseHandler from './rewardHandlers/base/BaseHandler.js';
 import EmoteOnlyChat from './rewardHandlers/EmoteOnlyChat.js';
+import MuteSound from './rewardHandlers/MuteSound.js';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ const rewardHandlers: handlers = {
   '80a644d9-4486-40a7-8e83-703e9c3931ae': new ChangeLedColor(),
   '5127c0b4-7bc1-462e-87fa-ed0784c1bbf9': new PlayAds(),
   '4829aa64-e782-45bb-b719-eb92286b1157': new EmoteOnlyChat(),
+  '40bcca95-04ac-4c8c-a38a-21de84ec1467': new MuteSound(),
 };
 
 console.log('Connecting to launchpad');

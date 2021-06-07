@@ -87,3 +87,18 @@ export async function setPreviewScene(scene: string): Promise<void> {
     'scene-name': scene,
   });
 }
+
+export async function getMute(source: string): Promise<boolean> {
+  return (await obs.send('GetMute', {
+    source,
+  })).muted;
+}
+
+export async function toggleMute(source: string): Promise<void> {
+  const muted = await getMute(source);
+
+  await obs.send('SetMute', {
+    source,
+    mute: !muted,
+  });
+}
