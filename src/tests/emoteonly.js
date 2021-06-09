@@ -1,4 +1,4 @@
-import ComfyJS from '@duncte123/comfy.js';
+import ComfyJS from 'comfy.js';
 import dotenv from 'dotenv';
 import { utils as lpUtils } from 'launchpad.js';
 

@@ -1,6 +1,6 @@
 import BaseHandler from './base/BaseHandler.js';
 
-import ComfyJS, { OnRewardExtra } from '@duncte123/comfy.js';
+import ComfyJS, { OnRewardExtra } from 'comfy.js';
 import { sleep } from '../helpers.js';
 
 export default class EmoteOnlyChat extends BaseHandler {

@@ -1,6 +1,6 @@
 import BaseHandler from './base/BaseHandler.js';
 import { setVisibilityOnSource } from '../apis/obs.js';
-import { OnRewardExtra } from '@duncte123/comfy.js';
+import { OnRewardExtra } from 'comfy.js';
 
 export default class SwitchCam extends BaseHandler {
   private running: boolean = false;

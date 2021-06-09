@@ -1,12 +1,10 @@
 import { LaunchpadMK2, colors } from 'launchpad.js';
-// TODO: temp until obs-websocket fixes a bug
-import robot from 'robotjs';
 import * as obs from '../apis/obs.js';
 import * as te from './twitchExecutors.js';
-import { showMainCam, triggerHonk } from './obsExecutors.js';
+import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
 import KeylightApi from '../apis/elgato/keylightapi.js';
 import { sleep } from '../helpers.js';
-import MuteSound from '../rewardHandlers/MuteSound.js';
+import { activateFilterOnActiveScene } from '../apis/obs.js';
 
 const { colorFromHex } = colors;
 
@@ -73,16 +71,24 @@ export default class LaunchpadController {
       },
     },
 
+    79: {
+      color: '#d75900',
+      handler: () => obs.triggerTransition({ 'with-transition': { name: 'Fade', duration: 300 } }),
+    },
+    77: {
+      color: '#c52aa9',
+      handler: showC920,
+    },
     73: {
       color:  '#9929d5',
       handler: () => obs.selectScene('be right back'),
     },
-    79: {
-      color: '#d75900',
-      // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Fade', duration: 300 } }),
-      handler: () => robot.keyTap('f19'), //temp
-    },
 
+
+    69: {
+      color: '#d58e00',
+      handler: () => obs.triggerTransition({ 'with-transition': { name: 'Cut' } }),
+    },
     67: {
       color: '#c52aa9',
       handler: showMainCam,
@@ -90,11 +96,6 @@ export default class LaunchpadController {
     63: {
       color: '#88142a',
       handler: () => obs.selectScene('end of stream'),
-    },
-    69: {
-      color: '#d58e00',
-      // handler: () => obs.triggerTransition({ 'with-transition': { name: 'Cut' } }),
-      handler: () => robot.keyTap('f20'), //temp
     },
 
     59: {
@@ -126,15 +127,26 @@ export default class LaunchpadController {
         },
       }
     },
-    /*28: {
-      color: '#c40d78',
-      // @ts-ignore
-      handler: () => new MuteSound().handle(),
-    },*/
+    25: {
+      color: '#5c0101',
+      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_top_right')
+    },
+    24: {
+      color: '#5c0101',
+      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_top_left')
+    },
 
     19: {
       color: '#16c869',
       handler: () => obs.triggerTransition(),
+    },
+    15: {
+      color: '#5c0101',
+      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_bottom_right')
+    },
+    14: {
+      color: '#5c0101',
+      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_bottom_left')
     },
 
     11: {

@@ -1,4 +1,4 @@
-import {OnRewardExtra} from '@duncte123/comfy.js';
+import {OnRewardExtra} from 'comfy.js';
 
 /**
  * @abstract

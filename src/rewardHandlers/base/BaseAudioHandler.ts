@@ -3,7 +3,7 @@ import path from 'path';
 import { playFile } from '../../apis/vlc.js';
 import { setVisibilityOnSource } from '../../apis/obs.js';
 import fs from 'fs';
-import { OnRewardExtra } from '@duncte123/comfy.js';
+import { OnRewardExtra } from 'comfy.js';
 
 /**
  * @abstract

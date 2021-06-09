@@ -1,6 +1,6 @@
 import SerialPort, {PortInfo} from 'serialport';
 import BaseHandler from './base/BaseHandler.js';
-import {OnRewardExtra} from '@duncte123/comfy.js';
+import {OnRewardExtra} from 'comfy.js';
 
 export default class ChangeLedColor extends BaseHandler {
   // red, orange, dark_yellow, yellow, light_yellow, green, pea_green, cyan, light_blue, sky_blue, blue, dark_orchid, magenta, purple, pink

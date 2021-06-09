@@ -72,6 +72,10 @@ export function setVisibilityOnSource(scene: string, source: string, visible: bo
   });
 }
 
+export async function getCurrentSceneName(): Promise<string> {
+  return (await obs.send('GetCurrentScene')).name;
+}
+
 export async function getPreviewSceneName(): Promise<string> {
   // get proper action that determines if studio mode is enabled or not
   const request = await studioModeEnabled() ? 'GetPreviewScene' : 'GetCurrentScene';
@@ -80,10 +84,11 @@ export async function getPreviewSceneName(): Promise<string> {
 }
 
 export async function setPreviewScene(scene: string): Promise<void> {
-  // get proper action that determines if studio mode is enabled or not
-  const request = await studioModeEnabled() ? 'SetPreviewScene' : 'SetCurrentScene';
+  if (!await studioModeEnabled()) {
+    return;
+  }
 
-  return obs.send(request, {
+  return obs.send('SetPreviewScene', {
     'scene-name': scene,
   });
 }
@@ -101,4 +106,30 @@ export async function toggleMute(source: string): Promise<void> {
     source,
     mute: !muted,
   });
+}
+
+export async function setCurrentScene(scene: string): Promise<void> {
+  return obs.send('SetCurrentScene', {
+    'scene-name': scene,
+  });
+}
+
+export async function activateFilter(sourceName: string, filterName: string): Promise<void> {
+  return obs.send('SetSourceFilterVisibility', {
+    sourceName,
+    filterName,
+    // wrong type supplied
+    // @ts-ignore
+    filterEnabled: true
+  });
+}
+
+export async function activateFilterOnActiveScene(sourceName: string, filterName: string): Promise<void> {
+  // get the old preview name
+  const oldScene = await getPreviewSceneName();
+
+  await selectScene(sourceName);
+  await activateFilter(sourceName, filterName)
+  await triggerTransition({ 'with-transition': { name: 'Cut' } });
+  await setPreviewScene(oldScene);
 }

@@ -1,7 +1,7 @@
 import BaseHandler from './base/BaseHandler.js';
 
 import * as obs from '../apis/obs.js';
-import { OnRewardExtra } from '@duncte123/comfy.js';
+import { OnRewardExtra } from 'comfy.js';
 import { sleep } from '../helpers.js';
 
 export default class MuteSound extends BaseHandler {
