@@ -4,3 +4,4 @@ node_modules/
 google-credentials.json
 goolge-token.json
 dist/
+wifi_credentials.h

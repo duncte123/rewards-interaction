@@ -1,5 +1,3 @@
-HTTP/1.1 200 OK
-Content-type: text/plain
+HTTP/1.1 204 No Content
+Server: PotatOS
 Connection: close
-
-Ok
