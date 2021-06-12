@@ -1,4 +1,4 @@
-import OBSWebSocket from 'obs-websocket-js';
+import OBSWebSocket from '@duncte123/obs-websocket-js';
 
 export const obs = new OBSWebSocket();
 
@@ -51,7 +51,9 @@ export async function selectScene(sceneName: string): Promise<void> {
 export function getSourceProperties(scene: string, source: string): Promise<any> {
   return obs.send('GetSceneItemProperties', {
     'scene-name': scene,
-    item: source
+    item: {
+      name: source
+    }
   });
 }
 
@@ -118,8 +120,6 @@ export async function activateFilter(sourceName: string, filterName: string): Pr
   return obs.send('SetSourceFilterVisibility', {
     sourceName,
     filterName,
-    // wrong type supplied
-    // @ts-ignore
     filterEnabled: true
   });
 }

@@ -1,0 +1,17 @@
+### change light color, will turn the lights on if they where off
+PUT http://esp:80/lights HTTP/1.1
+Content-Type: text/plain
+User-Agent: rewards-integration
+
+12
+
+###
+# The number is the id that would normally be sent over to the esp over a serial connection
+
+### Turn the lights off
+DELETE http://esp:80/lights HTTP/1.1
+Content-Type: text/plain
+
+### Turn the ligths on
+POST http://esp:80/lights HTTP/1.1
+Content-Type: text/plain

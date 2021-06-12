@@ -1,4 +1,4 @@
-import OBSWebSocket  from 'obs-websocket-js';
+import OBSWebSocket  from '@duncte123/obs-websocket-js';
 
 const obs = new OBSWebSocket();
 
