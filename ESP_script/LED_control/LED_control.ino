@@ -156,7 +156,11 @@ void loop() {
       Serial.print("currentLine ");
       Serial.println(currentLine);
       if (currentLine.startsWith("GET")) {
-        char* command = strtok(currentLine, " ");
+        int currLineLength = currentLine.length() + 1;
+        char currLine[currLineLength];
+        currentLine.toCharArray(currLine, currLineLength);
+        
+        char* command = strtok(currLine, " ");
 
         while (command != 0) {
           if (command[0] != '/') {
@@ -165,17 +169,18 @@ void loop() {
             continue;
           }
 
-          if (strEquals(command, "/lights/off")) {
+          String commandStr(command);
+
+          if (commandStr.equals("/lights/off")) {
             // todo, led off
             signalSuccess(client);
-          } else if (strEquals(command, "/lights/on")) {
+          } else if (commandStr.equals("/lights/on")) {
             // todo, led on
             signalSuccess(client);
-          } else if (strStartsWith(command, "/lights/colour/")) {
-            String commandStr(command);
-            commandStr.remove(0, sizeof(commandStr));
-            Serial.print("commandStr ");
-            Serial.println(commandStr);
+          } else if (commandStr.startsWith("/lights/colour/")) {
+            String colorId = commandStr.substring(commandStr.indexOf("/lights/colour/"));
+            Serial.print("colorId ");
+            Serial.println(colorId);
 
             signalSuccess(client);
           } else {
