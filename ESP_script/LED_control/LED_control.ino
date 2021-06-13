@@ -73,42 +73,6 @@ uint64_t lookupCommand(int color) {
   }
 }
 
-bool strStartsWith(char* inp, char* search) {
-    Serial.print("inp ");
-    Serial.println(inp);
-    Serial.print("search ");
-    Serial.println(search);
-  if (sizeof(search) > sizeof(inp)){
-    return false;
-  }
-
-  for (int i = 0; i < sizeof(search); i++) {
-    Serial.print("inp[i] ");
-    Serial.println(inp[i]);
-    Serial.print("search[i] ");
-    Serial.println(search[i]);
-    if (inp[i] != search[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool strEquals(char* inp, char* search) {
-  if (sizeof(search) != sizeof(inp)){
-    return false;
-  }
-
-  for (int i = 0; i < sizeof(search); i++) {
-    if (inp[i] != search[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void printHex(uint64_t hex) {
   serialPrintUint64(hex, HEX);
   Serial.println("");
@@ -121,6 +85,13 @@ void signalSuccess(WiFiClient& client) {
   client.println();
 }
 
+void sendIrData(uint64_t command) {
+  Serial.print("Sending command to IR blaster with value: ");
+  printHex(command);
+  irsend.sendNEC(command);
+  delay(2000);
+}
+
 // code modiefied from https://duncte.bot/JYRh
 void loop() {
   WiFiClient client = server.available();
@@ -130,8 +101,7 @@ void loop() {
     return;
   }
 
-  Serial.println("New Client.");          // print a message out in the serial port
-  String currentLine = "";                // make a String to hold incoming data from the client
+  String currentLine = "";
   // String lastLine = "";
   // int emptyCounter = 0;
   currentTime = millis();
@@ -149,12 +119,10 @@ void loop() {
     // start reading the data stream
     char c = client.read();
     // write it to the console
-    Serial.write(c);
+    // Serial.write(c);
 
     // new row in the http request
     if (c == '\n') {
-      Serial.print("currentLine ");
-      Serial.println(currentLine);
       if (currentLine.startsWith("GET")) {
         int currLineLength = currentLine.length() + 1;
         char currLine[currLineLength];
@@ -178,9 +146,19 @@ void loop() {
             // todo, led on
             signalSuccess(client);
           } else if (commandStr.startsWith("/lights/colour/")) {
-            String colorId = commandStr.substring(commandStr.indexOf("/lights/colour/"));
-            Serial.print("colorId ");
-            Serial.println(colorId);
+            commandStr.remove(0, commandStr.lastIndexOf("/") + 1);
+            int selectedColor = commandStr.toInt();
+
+            Serial.print("This just in ... ");
+            Serial.println(selectedColor);
+
+            if (selectedColor > 0) {
+              uint64_t command = lookupCommand(selectedColor);
+          
+              if (command > 0) {
+                sendIrData(command);
+              }
+            }
 
             signalSuccess(client);
           } else {
@@ -190,30 +168,19 @@ void loop() {
             client.println();
           }
 
-          Serial.println(command);
           // Find the next command in input string
           command = strtok(0, " ");
-
-            // Split the command in two values
-            /*char* separator = strchr(command, ':');
-            if (separator != 0) {
-                // Actually split the string in 2: replace ':' with 0
-                *separator = 0;
-                int servoId = atoi(command);
-                ++separator;
-                int position = atoi(separator);
-
-                // Do something with servoId and position
-            }*/
         }
 
         return;
       }
 
+      currentLine = "";
+
       // detect the "GET" prefix
       // extract and parse the path
       // handle request
-      if (currentLine.length() == 0 /*&& emptyCounter >= 1*/) {
+      /*if (currentLine.length() == 0) {
         // got the full http block at this point
         // client.println("HTTP/1.1 200 OK");
         client.println("HTTP/1.1 204 No Content");
@@ -233,28 +200,9 @@ void loop() {
         //}
 
         currentLine = "";
-      }
+      }*/
     } else if (c != '\r') {
       currentLine += c;
-    }
-  }
-}
-
-void sendIrData(uint64_t command) {
-  Serial.print("Sending command to IR blaster with value: ");
-  printHex(command);
-  irsend.sendNEC(command);
-  delay(2000);
-}
-
-void handleNewData(int selectedColor) {
-  Serial.print("This just in ... " + selectedColor);
-
-  if (selectedColor > 0) {
-    uint64_t command = lookupCommand(selectedColor);
-
-    if (command > 0) {
-      sendIrData(command);
     }
   }
 }
