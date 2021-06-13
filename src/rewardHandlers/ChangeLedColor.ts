@@ -1,18 +1,13 @@
-import SerialPort, {PortInfo} from 'serialport';
+import axios from 'axios';
 import BaseHandler from './base/BaseHandler.js';
 import {OnRewardExtra} from 'comfy.js';
 
 export default class ChangeLedColor extends BaseHandler {
   // red, orange, dark_yellow, yellow, light_yellow, green, pea_green, cyan, light_blue, sky_blue, blue, dark_orchid, magenta, purple, pink
 
-  /**
-   *
-   * @type {SerialPort}
-   * @private
-   */
-  private _port: SerialPort|null = null;
-  _lastColor = -1;
-  _colors = [
+  private baseUrl = 'http://192.168.0.120/lights/colour';
+  private lastColor = -1;
+  private colors = [
     'red',
     'orange',
     'dark_yellow',
@@ -30,58 +25,11 @@ export default class ChangeLedColor extends BaseHandler {
     'pink',
   ];
 
-  constructor() {
-    super();
-
-    SerialPort.list().then((ports: PortInfo[]) => {
-      if (ports.length === 0) {
-        this.log('No ports to connect to, disabling feature');
-        return;
-      }
-
-      if (ports.length === 1) {
-        const portName = ports[0].path
-
-        // connect to the port
-        // @ts-ignore
-        this._port = new SerialPort(portName, {
-          baudRate: 115200,
-          // Look for return and newline at the end of each data packet
-          parser: new (SerialPort.parsers.Readline)({ delimiter: '\n' })
-        });
-        this.setupHandlers();
-
-        this.log(`ESP connected to port ${portName}`);
-
-        return;
-      }
-
-      this.log(`Too many ports found: ${ports.map((port) => port.path)}`);
-    });
-  }
-
-  private setupHandlers(): void {
-    if (this._port == null) {
-      return;
-    }
-
-    this._port.on('error', (err) => {
-      this.log('ESP Error: ', err.message);
-    });
-
-    // Switches the port into "flowing mode"
-    this._port.on('data', (data) => {
-      const decoded = data.toString('utf8');
-      this.log('ESP Data: ' + decoded);
-    });
-  }
-
-
   handle(user: string, reward: string, cost: string, message: string, extra: OnRewardExtra) {
     const messageLower = message.toLowerCase();
 
-    if (this._colors.includes(messageLower)) {
-      const colorNum = this._colors.indexOf(messageLower);
+    if (this.colors.includes(messageLower)) {
+      const colorNum = this.colors.indexOf(messageLower);
       this.setLedColor(colorNum);
       return;
     }
@@ -91,26 +39,23 @@ export default class ChangeLedColor extends BaseHandler {
 
     // "Randomly" select a different color if it is the same as the current color
     do {
-      randomColor = Math.floor(Math.random() * this._colors.length);
-    } while (randomColor === this._lastColor);
+      randomColor = Math.floor(Math.random() * this.colors.length);
+    } while (randomColor === this.lastColor);
 
     this.setLedColor(randomColor);
   }
 
   private setLedColor(colorNum: number): void {
-    // wait a few seconds if the port is not connected yet
-    if (this._port === null) {
-      this.log('Port is null, not proceeding');
-      return;
-    }
-
-    this._lastColor = colorNum;
+    this.lastColor = colorNum;
 
     // add one to add to the index
     colorNum = colorNum + 1;
 
     this.log(`Setting color: ${colorNum}`);
     // write a newline to stop the data
-    this._port.write(`${colorNum}\n`);
+    axios.get(`${this.baseUrl}/${colorNum}`).catch((e) => {
+      this.log('Setting LED colour failed.');
+      console.error(e);
+    });
   }
 }
