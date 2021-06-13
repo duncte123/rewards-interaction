@@ -15,7 +15,7 @@ WiFiServer server(80);
 // Current time
 unsigned long currentTime = millis();
 // Previous time
-unsigned long previousTime = 0; 
+unsigned long previousTime = 0;
 // Define timeout time in milliseconds (example: 2000ms = 2s)
 const long timeoutTime = 2000;
 
@@ -73,9 +73,52 @@ uint64_t lookupCommand(int color) {
   }
 }
 
+bool strStartsWith(char* inp, char* search) {
+    Serial.print("inp ");
+    Serial.println(inp);
+    Serial.print("search ");
+    Serial.println(search);
+  if (sizeof(search) > sizeof(inp)){
+    return false;
+  }
+
+  for (int i = 0; i < sizeof(search); i++) {
+    Serial.print("inp[i] ");
+    Serial.println(inp[i]);
+    Serial.print("search[i] ");
+    Serial.println(search[i]);
+    if (inp[i] != search[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool strEquals(char* inp, char* search) {
+  if (sizeof(search) != sizeof(inp)){
+    return false;
+  }
+
+  for (int i = 0; i < sizeof(search); i++) {
+    if (inp[i] != search[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void printHex(uint64_t hex) {
   serialPrintUint64(hex, HEX);
   Serial.println("");
+}
+
+void signalSuccess(WiFiClient& client) {
+  client.println("HTTP/1.1 204 No Content");
+  client.println("Server: PotatOS");
+  client.println("Connection: close");
+  client.println();
 }
 
 // code modiefied from https://duncte.bot/JYRh
@@ -109,7 +152,59 @@ void loop() {
     Serial.write(c);
 
     // new row in the http request
-    if (c == '\n' ) {
+    if (c == '\n') {
+      Serial.print("currentLine ");
+      Serial.println(currentLine);
+      if (currentLine.startsWith("GET")) {
+        char* command = strtok(currentLine, " ");
+
+        while (command != 0) {
+          if (command[0] != '/') {
+            // Find the next command in input string
+            command = strtok(0, " ");
+            continue;
+          }
+
+          if (strEquals(command, "/lights/off")) {
+            // todo, led off
+            signalSuccess(client);
+          } else if (strEquals(command, "/lights/on")) {
+            // todo, led on
+            signalSuccess(client);
+          } else if (strStartsWith(command, "/lights/colour/")) {
+            String commandStr(command);
+            commandStr.remove(0, sizeof(commandStr));
+            Serial.print("commandStr ");
+            Serial.println(commandStr);
+
+            signalSuccess(client);
+          } else {
+            client.println("HTTP/1.1 400 Bad Request");
+            client.println("Server: PotatOS");
+            client.println("Connection: close");
+            client.println();
+          }
+
+          Serial.println(command);
+          // Find the next command in input string
+          command = strtok(0, " ");
+
+            // Split the command in two values
+            /*char* separator = strchr(command, ':');
+            if (separator != 0) {
+                // Actually split the string in 2: replace ':' with 0
+                *separator = 0;
+                int servoId = atoi(command);
+                ++separator;
+                int position = atoi(separator);
+
+                // Do something with servoId and position
+            }*/
+        }
+
+        return;
+      }
+
       // detect the "GET" prefix
       // extract and parse the path
       // handle request
@@ -140,6 +235,13 @@ void loop() {
   }
 }
 
+void sendIrData(uint64_t command) {
+  Serial.print("Sending command to IR blaster with value: ");
+  printHex(command);
+  irsend.sendNEC(command);
+  delay(2000);
+}
+
 void handleNewData(int selectedColor) {
   Serial.print("This just in ... " + selectedColor);
 
@@ -150,11 +252,4 @@ void handleNewData(int selectedColor) {
       sendIrData(command);
     }
   }
-}
-
-void sendIrData(uint64_t command) {
-  Serial.print("Sending command to IR blaster with value: ");
-  printHex(command);
-  irsend.sendNEC(command);
-  delay(2000);
 }

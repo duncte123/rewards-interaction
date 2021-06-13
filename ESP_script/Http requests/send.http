@@ -19,7 +19,7 @@ Content-Type: text/plain
 
 ### post bodies are hard on the ESP, we're using get requests
 ### change light color, will turn the lights on if they where off
-GET http://esp:80/lights/{num} HTTP/1.1
+GET http://esp:80/lights/colour/{num} HTTP/1.1
 
 ###
 # The number is the id that would normally be sent over to the esp over a serial connection
