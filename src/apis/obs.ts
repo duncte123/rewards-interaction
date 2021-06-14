@@ -1,4 +1,4 @@
-import OBSWebSocket from '@duncte123/obs-websocket-js';
+import { OBSWebSocket } from '@duncte123/obs-websocket-js';
 
 export const obs = new OBSWebSocket();
 
@@ -128,8 +128,29 @@ export async function activateFilterOnActiveScene(sourceName: string, filterName
   // get the old preview name
   const oldScene = await getPreviewSceneName();
 
-  await selectScene(sourceName);
-  await activateFilter(sourceName, filterName)
-  await triggerTransition({ 'with-transition': { name: 'Cut' } });
-  await setPreviewScene(oldScene);
+  await obs.send('ExecuteBatch', {
+    requests: [
+      {
+        'request-type': 'SetPreviewScene',
+        'scene-name': sourceName,
+      },
+      {
+        'request-type': 'SetSourceFilterVisibility',
+        sourceName,
+        filterName,
+        filterEnabled: true,
+      },
+      {
+        'request-type': 'TransitionToProgram',
+        'with-transition': {
+          name: 'Cut',
+        },
+      },
+      {
+        'request-type': 'SetPreviewScene',
+        'scene-name': oldScene,
+      },
+    ],
+    abortOnFail: true,
+  });
 }

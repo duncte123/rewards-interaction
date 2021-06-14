@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@duncte123/obs-websocket-js@^4.9.2":
-  version "4.9.2"
-  resolved "https://registry.yarnpkg.com/@duncte123/obs-websocket-js/-/obs-websocket-js-4.9.2.tgz#26e61ef9961637e1435838ab2cc2ba1e062572c7"
-  integrity sha512-koADXh69ae2oDjWlnD8wCx2F6MCZVKHuJtNBZZb8qglj88nwHVFUgL3Gqz1l4c9vj5TJS8Ud4A3PCaZfB/8KQQ==
+"@duncte123/obs-websocket-js@4.9.3":
+  version "4.9.3"
+  resolved "https://registry.yarnpkg.com/@duncte123/obs-websocket-js/-/obs-websocket-js-4.9.3.tgz#d66ff71a941e4c5c470676ce80502b0d714ebe17"
+  integrity sha512-YwaXOlGbr0F4Yl3mAEN17eR2/YaIA8IeeuPatmeHYpNTl3/Q73ZEu+yQxtSmq6vsd/sd6GWcU0Nh6Rxp6oZVRQ==
   dependencies:
     debug "^4.1.0"
     isomorphic-ws "^4.0.1"

@@ -14,7 +14,7 @@
     "start:test": "tsc && node dist/tests/testRunner.js"
   },
   "dependencies": {
-    "@duncte123/obs-websocket-js": "^4.9.2",
+    "@duncte123/obs-websocket-js": "^4.9.3",
     "axios": "^0.21.1",
     "bonjour": "^3.5.0",
     "color-convert": "^2.0.1",
