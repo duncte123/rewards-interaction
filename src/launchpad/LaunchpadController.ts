@@ -4,7 +4,6 @@ import * as te from './twitchExecutors.js';
 import { showC920, showMainCam, triggerHonk } from './obsExecutors.js';
 import KeylightApi from '../apis/elgato/keylightapi.js';
 import { sleep } from '../helpers.js';
-import { activateFilterOnActiveScene } from '../apis/obs.js';
 
 const { colorFromHex } = colors;
 
@@ -129,11 +128,11 @@ export default class LaunchpadController {
     },
     25: {
       color: '#5c0101',
-      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_top_right')
+      handler: () => obs.activateFilter('camera cornered', 'cam_top_right')
     },
     24: {
       color: '#5c0101',
-      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_top_left')
+      handler: () => obs.activateFilter('camera cornered', 'cam_top_left')
     },
 
     19: {
@@ -142,11 +141,11 @@ export default class LaunchpadController {
     },
     15: {
       color: '#5c0101',
-      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_bottom_right')
+      handler: () => obs.activateFilter('camera cornered', 'cam_bottom_right')
     },
     14: {
       color: '#5c0101',
-      handler: () => obs.activateFilterOnActiveScene('main stream', 'cam_bottom_left')
+      handler: () => obs.activateFilter('camera cornered', 'cam_bottom_left')
     },
 
     11: {
