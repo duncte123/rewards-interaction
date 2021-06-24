@@ -13,8 +13,7 @@ export const obs = new OBSWebSocket();
     console.error(e);
   }
 
-  // @ts-ignore
-  obs.on('error', err => {
+  obs.on('error', (err) => {
     console.error('socket error:', err);
   });
 })();
@@ -96,9 +95,7 @@ export async function setPreviewScene(scene: string): Promise<void> {
 }
 
 export async function getMute(source: string): Promise<boolean> {
-  return (await obs.send('GetMute', {
-    source,
-  })).muted;
+  return (await obs.send('GetMute', { source })).muted;
 }
 
 export async function toggleMute(source: string): Promise<void> {
