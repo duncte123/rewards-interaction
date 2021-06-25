@@ -7,46 +7,63 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Countdown timer</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
     html, body {
       margin: 0;
       padding: 0;
-      background-color: rgba(0, 0, 0, 1);
-      font-family: "Montserrat SemiBold", serif;
+      background-color: rgba(0, 0, 0, 0);
+      font-family: "Roboto", sans-serif;
       font-variant-numeric: tabular-nums;
-      position: relative;
+    }
+
+    .parent {
+      width: 100%;
+    }
+
+    .inner {
+      display: table;
+      margin: 0 auto;
     }
 
     .timer-container {
-      /*width: 1280px;
-      height: 74px;*/
-      display: block;
-      /*background-color: cornflowerblue;*/
-      position: relative;
+      margin: 0 auto;
+      display: inline-block;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
     }
 
     .timer-container #timer {
       color: white;
       font-size: 60px;
-      /*position: absolute;
-      top: 5px;
-      right: -5px;*/
       text-align: left;
-      padding-right: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="timer-container">
-    <span id="timer">00:00</span>
+<div class="parent">
+  <div class="inner">
+
+    <div class="timer-container">
+      <span id="timer">00:00</span>
+    </div>
+
   </div>
+</div>
 
   <script>
-    //new URL(document.location).searchParams;
+    const params = new URL(document.location).searchParams;
 
     let intervalNum = -1;
     const target = new Date();
 
-    target.setHours(19, 0, 0, 0);
+
+    if (!params.has('time')) {
+      document.getElementById('timer').innerHTML = 'Please set time with "?time=15:00"';
+    }
+
+    const parts = params.get('time').split(':');
+    target.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
 
     const targetTime = target.getTime();
 
@@ -75,11 +92,11 @@
         display = `${padZero(hours)}:${display}`;
       }
 
-      // document.getElementById('timer').innerHTML = display;
+      document.getElementById('timer').innerHTML = display;
     }
 
-    //intervalNum = setInterval(() => updateTime(), 1000);
-    //updateTime();
+    intervalNum = setInterval(() => updateTime(), 1000);
+    updateTime();
   </script>
 </body>
 </html>
