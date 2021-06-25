@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Countdown timer</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: rgba(0, 0, 0, 1);
+      font-family: "Montserrat SemiBold", serif;
+      font-variant-numeric: tabular-nums;
+      position: relative;
+    }
+
+    .timer-container {
+      /*width: 1280px;
+      height: 74px;*/
+      display: block;
+      /*background-color: cornflowerblue;*/
+      position: relative;
+    }
+
+    .timer-container #timer {
+      color: white;
+      font-size: 60px;
+      /*position: absolute;
+      top: 5px;
+      right: -5px;*/
+      text-align: left;
+      padding-right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="timer-container">
+    <span id="timer">00:00</span>
+  </div>
+
+  <script>
+    //new URL(document.location).searchParams;
+
+    let intervalNum = -1;
+    const target = new Date();
+
+    target.setHours(19, 0, 0, 0);
+
+    const targetTime = target.getTime();
+
+    function padZero(time) {
+      return time < 10 ? `0${time}` : time;
+    }
+
+    function updateTime() {
+      const nowTime = new Date().getTime();
+      const timeDiff = targetTime - nowTime;
+
+      if (timeDiff <= 0) {
+        clearInterval(intervalNum);
+        // display live message
+        document.getElementById('timer').innerHTML = 'Starting soon!';
+        return;
+      }
+
+      const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+      let display = `${padZero(minutes)}:${padZero(seconds)}`;
+
+      if (hours >= 1) {
+        display = `${padZero(hours)}:${display}`;
+      }
+
+      // document.getElementById('timer').innerHTML = display;
+    }
+
+    //intervalNum = setInterval(() => updateTime(), 1000);
+    //updateTime();
+  </script>
+</body>
+</html>
