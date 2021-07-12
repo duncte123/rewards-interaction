@@ -49,25 +49,7 @@ export default class LaunchpadController {
     },
     83: {
       color: '#92ee92',
-      handler: async () => {
-        await obs.selectScene('starting soon');
-        await obs.setVisibilityOnSource('starting soon', 'count down timer red', false);
-      },
-    },
-    84: {
-      color: '#2bcef1',
-      handler: async () => {
-        // get the old preview name
-        const oldScene = await obs.getPreviewSceneName();
-        // select the scene
-        await obs.selectScene('starting soon');
-        // Update starting soon to activate the timer
-        await obs.setVisibilityOnSource('starting soon', 'count down timer red', true);
-        // Transition the timer
-        await obs.triggerTransition({ 'with-transition': { name: 'Cut' } });
-        // go back to the old scene
-        await obs.setPreviewScene(oldScene);
-      },
+      handler: () => obs.selectScene('starting soon'),
     },
 
     79: {
@@ -128,11 +110,11 @@ export default class LaunchpadController {
     },
     25: {
       color: '#5c0101',
-      handler: () => obs.activateFilter('camera cornered', 'cam_top_right')
+      handler: () => obs.activateFilter('main stream', 'cam_top_right')
     },
     24: {
       color: '#5c0101',
-      handler: () => obs.activateFilter('camera cornered', 'cam_top_left')
+      handler: () => obs.activateFilter('main stream', 'cam_top_left')
     },
 
     19: {
@@ -141,11 +123,11 @@ export default class LaunchpadController {
     },
     15: {
       color: '#5c0101',
-      handler: () => obs.activateFilter('camera cornered', 'cam_bottom_right')
+      handler: () => obs.activateFilter('main stream', 'cam_bottom_right')
     },
     14: {
       color: '#5c0101',
-      handler: () => obs.activateFilter('camera cornered', 'cam_bottom_left')
+      handler: () => obs.activateFilter('main stream', 'cam_bottom_left')
     },
 
     11: {
